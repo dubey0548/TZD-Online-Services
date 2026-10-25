@@ -43,7 +43,6 @@
             100% { background-position: 0% 50%; }
         }
         
-        /* Receipt Style */
         .receipt-container {
             background: #ffffff;
             color: #1f2937;
@@ -52,24 +51,6 @@
             border-radius: 12px;
             margin-bottom: 15px;
             font-family: 'Courier New', Courier, monospace;
-        }
-
-        /* NEW: Image Float Animation */
-        @keyframes floatAnim {
-            0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-12px) scale(1.05); }
-            100% { transform: translateY(0px) scale(1); }
-        }
-        .animate-float {
-            animation: floatAnim 3s ease-in-out infinite;
-        }
-        
-        /* Line Clamp for Card Description */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
     </style>
 </head>
@@ -189,46 +170,6 @@
         <p>© 2026 TZD Online Services & TZD Jan Sewa Kendra, Gorakhpur. All Rights Reserved.</p>
     </footer>
 
-    <!-- NEW: SERVICE DETAILS MODAL (Animated Image & Bio-data) -->
-    <div id="serviceDetailsModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex justify-center items-center p-4 backdrop-blur-sm transition-all">
-        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl relative overflow-hidden transform transition-all">
-            <button onclick="closeServiceDetails()" class="absolute top-4 right-4 bg-white bg-opacity-50 hover:bg-red-100 text-gray-600 hover:text-red-600 w-8 h-8 rounded-full flex items-center justify-center text-xl font-bold z-10 transition">
-                &times;
-            </button>
-            
-            <!-- Animated Image Header -->
-            <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-8 flex justify-center items-center border-b">
-                <img id="detailImage" src="" alt="Service Graphic" class="h-32 object-contain animate-float drop-shadow-xl">
-            </div>
-            
-            <!-- Service Bio-Data -->
-            <div class="p-6">
-                <div class="flex justify-between items-start mb-2">
-                    <div class="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-bold mb-2 shadow-sm" id="detailCat"></div>
-                    <span class="text-2xl font-extrabold text-green-600 bg-green-50 px-3 py-1 rounded-lg" id="detailPrice"></span>
-                </div>
-                
-                <h3 id="detailTitle" class="text-xl md:text-2xl font-bold text-gray-900 mb-3 leading-tight"></h3>
-                <p class="text-gray-600 text-sm mb-5 leading-relaxed" id="detailDesc"></p>
-                
-                <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-xl mb-5 shadow-inner">
-                    <p class="text-xs text-yellow-800 font-bold mb-2 uppercase tracking-wider"><i class="fas fa-file-alt mr-1"></i> आवश्यक दस्तावेज (Required Docs):</p>
-                    <p class="text-sm text-gray-800 font-medium" id="detailDocs"></p>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="grid grid-cols-2 gap-3 pt-2">
-                    <button id="detailPayBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white py-3 rounded-xl text-sm font-bold shadow-lg transition transform hover:-translate-y-1">
-                        <i class="fas fa-credit-card mr-1"></i> Pay Now
-                    </button>
-                    <button id="detailApplyBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl text-sm font-bold shadow-lg transition transform hover:-translate-y-1">
-                        <i class="fab fa-whatsapp mr-1"></i> Apply / Msg
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- PAYMENT RECEIPT MODAL -->
     <div id="receiptModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
@@ -239,6 +180,7 @@
                     <h2 class="text-xl font-bold text-blue-900">TZD Online Services</h2>
                     <p class="text-xs text-gray-600">Payment Receipt</p>
                 </div>
+                
                 <div class="text-sm space-y-2 mb-4 text-gray-800">
                     <p><strong>Status:</strong> <span class="text-green-600 font-bold">SUCCESSFUL ✓</span></p>
                     <p><strong>Customer Name:</strong> <span id="recName"></span></p>
@@ -248,6 +190,7 @@
                     <p><strong>Transaction ID:</strong> <br><span id="recTxnId" class="text-xs text-gray-600 break-all font-mono"></span></p>
                     <p><strong>Date & Time:</strong> <span id="recDate" class="text-xs text-gray-600"></span></p>
                 </div>
+                
                 <div class="text-center text-xs text-gray-500 border-t pt-2 mt-4">
                     Thank you for using TZD Jan Sewa Kendra.<br>This is a computer-generated receipt.
                 </div>
@@ -385,19 +328,16 @@
                 </div>
             </div>
 
-            <!-- Add Service (Updated with Image URL) -->
+            <!-- Add Service -->
             <div class="bg-gray-50 border p-4 rounded-xl mb-6">
                 <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-plus-circle text-green-600 mr-2"></i>4. नई सर्विस जोड़ें</h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-                    <input type="text" id="newTitle" placeholder="सर्विस का नाम *" class="border p-2.5 rounded-lg text-sm">
-                    <input type="text" id="newCat" placeholder="कैटेगरी (Form, Ticket) *" class="border p-2.5 rounded-lg text-sm">
-                    <input type="number" id="newPrice" placeholder="प्राइस ₹ में *" class="border p-2.5 rounded-lg text-sm">
-                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <input type="text" id="newTitle" placeholder="सर्विस का नाम" class="border p-2.5 rounded-lg text-sm">
+                    <input type="text" id="newCat" placeholder="कैटेगरी (जैसे: Form, Ticket)" class="border p-2.5 rounded-lg text-sm">
+                    <input type="number" id="newPrice" placeholder="प्राइस ₹ में" class="border p-2.5 rounded-lg text-sm">
                     <input type="text" id="newDocs" placeholder="ज़रूरी डॉक्यूमेंट्स" class="border p-2.5 rounded-lg text-sm">
-                    <input type="url" id="newImage" placeholder="इमेज का लिंक (ऑप्शनल)" class="border p-2.5 rounded-lg text-sm">
                 </div>
-                <input type="text" id="newDesc" placeholder="पूरा विवरण (Bio-data)" class="w-full border p-2.5 rounded-lg text-sm mb-3">
+                <input type="text" id="newDesc" placeholder="छोटा विवरण" class="w-full border p-2.5 rounded-lg text-sm mb-3">
                 <button id="addServiceBtn" onclick="addNewService()" class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold">
                     <i class="fas fa-plus mr-1"></i> Add Service
                 </button>
@@ -509,36 +449,20 @@
                 return;
             }
             filtered.forEach(s => {
-                // Default image if not provided
-                const displayImg = s.image || 'https://cdn-icons-png.flaticon.com/512/8112/8112604.png';
-                
                 grid.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-md p-5 border flex flex-col justify-between hover:shadow-lg transition">
+                    <div class="bg-white rounded-2xl shadow-md p-6 border flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-start mb-3">
                                 <span class="text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-700">${s.category}</span>
                                 <span class="text-2xl font-extrabold text-blue-800">₹${s.price}</span>
                             </div>
-                            
-                            <!-- Image thumbnail on card -->
-                            <div class="flex justify-center mb-4">
-                                <img src="${displayImg}" alt="${s.title}" class="h-16 object-contain drop-shadow-sm">
-                            </div>
-                            
-                            <h4 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1" title="${s.title}">${s.title}</h4>
-                            <p class="text-gray-500 text-xs mb-3 line-clamp-2">${s.desc}</p>
+                            <h4 class="text-lg font-bold text-gray-900 mb-2">${s.title}</h4>
+                            <p class="text-gray-600 text-xs mb-4">${s.desc}</p>
+                            <p class="text-xs text-gray-500 mb-4"><strong>Docs:</strong> ${s.docs}</p>
                         </div>
-                        
-                        <div class="mt-auto">
-                            <!-- NEW: View Details Button -->
-                            <button onclick="openServiceDetails('${s.id}')" class="w-full bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-700 py-2 rounded-xl text-xs font-bold mb-2 transition">
-                                <i class="fas fa-info-circle mr-1"></i> पूरी जानकारी देखें
-                            </button>
-                            
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="payWithRazorpay('${s.id}')" class="bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold shadow hover:bg-blue-800">Pay Now</button>
-                                <button onclick="applyViaWhatsApp('${s.id}')" class="bg-green-600 text-white py-2.5 rounded-xl text-xs font-bold shadow hover:bg-green-700"><i class="fab fa-whatsapp"></i> Apply</button>
-                            </div>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <button onclick="payWithRazorpay('${s.id}')" class="bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold shadow hover:bg-blue-800">Pay ₹${s.price}</button>
+                            <button onclick="applyViaWhatsApp('${s.id}')" class="bg-green-600 text-white py-2.5 rounded-xl text-xs font-bold shadow hover:bg-green-700"><i class="fab fa-whatsapp"></i> Apply</button>
                         </div>
                     </div>`;
             });
@@ -636,6 +560,7 @@
             const pass = document.getElementById('regPass').value.trim();
 
             if (!name || phone.length < 10 || !pass) return alert("Please enter valid details!");
+
             const btn = document.getElementById('registerBtn');
             btn.innerHTML = 'Registering...'; btn.disabled = true;
 
@@ -661,6 +586,7 @@
             const phone = document.getElementById('loginPhone').value.trim();
             const pass = document.getElementById('loginPass').value.trim();
             if (!phone || !pass) return alert("Enter mobile and password!");
+
             const btn = document.getElementById('loginBtn');
             btn.innerHTML = 'Logging in...'; btn.disabled = true;
 
@@ -684,7 +610,9 @@
             const phone = document.getElementById('forgotPhone').value.trim();
             const name = document.getElementById('forgotName').value.trim();
             const newPass = document.getElementById('forgotNewPass').value.trim();
+
             if (!phone || !name || !newPass) return alert("Please fill all details correctly!");
+
             const btn = document.getElementById('forgotBtn');
             btn.innerHTML = 'Verifying...'; btn.disabled = true;
 
@@ -697,7 +625,9 @@
                     userDocs.forEach(d => docId = d.id);
                     await db.collection("users").doc(docId).update({ pass: newPass });
                     alert("Success! Password Changed Successfully. Please login with your new password.");
-                    document.getElementById('forgotPhone').value = ''; document.getElementById('forgotName').value = ''; document.getElementById('forgotNewPass').value = '';
+                    document.getElementById('forgotPhone').value = '';
+                    document.getElementById('forgotName').value = '';
+                    document.getElementById('forgotNewPass').value = '';
                     window.switchAuthTab('login');
                 }
             } catch(e) { alert("Server error. Please try again."); }
@@ -714,7 +644,9 @@
                 window.closeAuthModal();
                 window.renderHeaderAuth();
                 window.toggleAdminModal();
-            } else { alert("Wrong Admin ID or Password!"); }
+            } else {
+                alert("Wrong Admin ID or Password!");
+            }
         };
 
         window.handleAdminForgotPassword = function() {
@@ -724,15 +656,21 @@
             const newPass = document.getElementById('forgotAdminNewPass').value.trim();
 
             if (!id || !phone || !secret || !newPass) return alert("कृपया सभी जानकारी भरें!");
+
             const ADMIN_MASTER_PIN = window.adminSecretPin; 
 
             if (id === 'admin' && phone === '8416862196' && secret === ADMIN_MASTER_PIN) {
                 window.adminPass = newPass;
                 localStorage.setItem('tzd_admin_pass', newPass); 
                 alert("Success! Admin Password Changed Successfully.");
-                document.getElementById('forgotAdminId').value = ''; document.getElementById('forgotAdminPhone').value = ''; document.getElementById('forgotAdminSecret').value = ''; document.getElementById('forgotAdminNewPass').value = '';
+                document.getElementById('forgotAdminId').value = '';
+                document.getElementById('forgotAdminPhone').value = '';
+                document.getElementById('forgotAdminSecret').value = '';
+                document.getElementById('forgotAdminNewPass').value = '';
                 window.switchAuthTab('admin');
-            } else { alert("Authentication Failed! जानकारी या Secret Recovery PIN गलत है।"); }
+            } else {
+                alert("Authentication Failed! जानकारी या Secret Recovery PIN गलत है।");
+            }
         };
 
         window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_live_यहां_अपनी_असली_की_डालें'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
@@ -752,21 +690,20 @@
             const price = Number(document.getElementById('newPrice').value);
             const docs_req = document.getElementById('newDocs').value.trim() || 'Aadhar, Photo';
             const desc = document.getElementById('newDesc').value.trim() || 'Online Application Service';
-            const imgUrl = document.getElementById('newImage').value.trim(); // NEW
 
             if (!title || !price || !category) return alert("Title, Category and Price are required!");
             
             const btn = document.getElementById('addServiceBtn');
             try {
                 btn.innerHTML = 'Saving...'; btn.disabled = true;
-                const ns = { title, category, price, docs: docs_req, desc, image: imgUrl, time: Date.now() };
+                const ns = { title, category, price, docs: docs_req, desc, time: Date.now() };
                 const docRef = await db.collection("services").add(ns);
                 ns.id = docRef.id;
                 window.services.unshift(ns);
                 
                 window.renderFilters(); window.renderAdminList(); window.renderServices();
                 document.getElementById('newTitle').value = ''; document.getElementById('newCat').value = ''; 
-                document.getElementById('newPrice').value = ''; document.getElementById('newDocs').value = ''; document.getElementById('newDesc').value = ''; document.getElementById('newImage').value = '';
+                document.getElementById('newPrice').value = ''; document.getElementById('newDocs').value = ''; document.getElementById('newDesc').value = '';
                 alert("New Service Added!");
             } catch(e) { alert("Error saving service!"); }
             btn.innerHTML = '<i class="fas fa-plus mr-1"></i> Add Service'; btn.disabled = false;
@@ -778,31 +715,6 @@
                 window.services = window.services.filter(s => s.id !== id);
                 window.renderFilters(); window.renderAdminList(); window.renderServices();
             }
-        };
-
-        // NEW: VIEW SERVICE DETAILS LOGIC
-        window.openServiceDetails = function(id) {
-            const s = window.services.find(x => x.id === id);
-            if(!s) return;
-            
-            document.getElementById('detailTitle').innerText = s.title;
-            document.getElementById('detailCat').innerText = s.category;
-            document.getElementById('detailDesc').innerText = s.desc;
-            document.getElementById('detailDocs').innerText = s.docs;
-            document.getElementById('detailPrice').innerText = '₹' + s.price;
-            
-            const displayImg = s.image || 'https://cdn-icons-png.flaticon.com/512/8112/8112604.png';
-            document.getElementById('detailImage').src = displayImg;
-            
-            // Re-bind Action Buttons
-            document.getElementById('detailPayBtn').onclick = function() { closeServiceDetails(); payWithRazorpay(s.id); };
-            document.getElementById('detailApplyBtn').onclick = function() { closeServiceDetails(); applyViaWhatsApp(s.id); };
-            
-            document.getElementById('serviceDetailsModal').classList.remove('hidden');
-        };
-
-        window.closeServiceDetails = function() {
-            document.getElementById('serviceDetailsModal').classList.add('hidden');
         };
 
         // 6. WHATSAPP & RAZORPAY
@@ -857,7 +769,7 @@
                         window.renderCustomerTransactions();
                     } catch(e) { console.log("Txn save failed", e); }
 
-                    window.viewPastReceipt(newTxn.id || res.razorpay_payment_id);
+                    window.viewPastReceipt(newTxn.id);
                 }
             });
             rzp1.open();
@@ -876,6 +788,9 @@
             
             document.getElementById('receiptModal').classList.remove('hidden');
             document.getElementById('customerDashboardModal').classList.add('hidden');
+            if(document.getElementById('adminModal')) {
+                document.getElementById('adminModal').classList.add('hidden');
+            }
         };
 
         window.shareAdminReceiptWA = function(txnId) {
@@ -887,19 +802,7 @@
 
         // PDF DOWNLOAD WITH STABLE BACKGROUND
         window.downloadReceiptPDF = function() {
-            const originalElement = document.getElementById('receiptContent');
-            const clone = originalElement.cloneNode(true);
-            const tempDiv = document.createElement('div');
-            
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.top = '-9999px'; 
-            tempDiv.style.left = '0';
-            tempDiv.style.width = '600px'; 
-            tempDiv.style.background = '#ffffff';
-            tempDiv.style.padding = '20px';
-            tempDiv.appendChild(clone);
-            document.body.appendChild(tempDiv);
-
+            const element = document.getElementById('receiptContent');
             const opt = {
                 margin:       10,
                 filename:     'TZD_Payment_Receipt.pdf',
@@ -907,10 +810,7 @@
                 html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
             };
-            
-            html2pdf().set(opt).from(tempDiv).save().then(() => {
-                document.body.removeChild(tempDiv);
-            });
+            html2pdf().set(opt).from(element).save();
         };
 
         window.shareReceiptOnWhatsApp = function() {
