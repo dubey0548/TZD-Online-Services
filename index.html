@@ -161,16 +161,39 @@
     <div id="authModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl font-bold">&times;</button>
-            <div class="flex border-b mb-5">
+            
+            <div class="flex border-b mb-5" id="authTabsContainer">
                 <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-sm font-bold border-b-2 border-blue-700 text-blue-700">ग्राहक लॉगिन</button>
                 <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-800">नया रजिस्ट्रेशन</button>
                 <button id="tabAdmin" onclick="switchAuthTab('admin')" class="flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-red-600">एडमिन</button>
             </div>
+            
+            <!-- Login Form -->
             <div id="formLogin" class="space-y-4">
                 <input type="tel" id="loginPhone" placeholder="10 अंकों का मोबाइल नंबर" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <input type="password" id="loginPass" placeholder="अपना पासवर्ड डालें" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <button id="loginBtn" onclick="handleCustomerLogin()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow">Login</button>
+                
+                <!-- NEW: Forgot Password Link -->
+                <div class="text-right mt-1">
+                    <button onclick="switchAuthTab('forgot')" class="text-xs text-blue-600 hover:text-blue-800 font-semibold hover:underline">Forgot Password? (पासवर्ड भूल गए?)</button>
+                </div>
             </div>
+
+            <!-- Forgot Password Form -->
+            <div id="formForgot" class="space-y-3 hidden">
+                <h3 class="font-bold text-gray-800 text-center mb-1">पासवर्ड रीसेट करें</h3>
+                <p class="text-xs text-red-500 text-center mb-3">सिक्योरिटी के लिए अपना रजिस्टर किया हुआ नाम और मोबाइल नंबर डालें।</p>
+                <input type="tel" id="forgotPhone" placeholder="रजिस्टर्ड मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
+                <input type="text" id="forgotName" placeholder="रजिस्टर्ड पूरा नाम (Exact Name) *" class="w-full border p-2.5 rounded-lg text-sm">
+                <input type="password" id="forgotNewPass" placeholder="नया पासवर्ड बनाएं *" class="w-full border p-2.5 rounded-lg text-sm">
+                <button id="forgotBtn" onclick="handleForgotPassword()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 rounded-xl shadow mt-2">Reset Password</button>
+                <div class="text-center mt-3">
+                    <button onclick="switchAuthTab('login')" class="text-xs text-blue-600 hover:underline"><i class="fas fa-arrow-left"></i> Back to Login</button>
+                </div>
+            </div>
+
+            <!-- Register Form -->
             <div id="formRegister" class="space-y-3 hidden">
                 <input type="text" id="regName" placeholder="पूरा नाम (Full Name) *" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="tel" id="regPhone" placeholder="10 अंकों का मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
@@ -178,6 +201,8 @@
                 <input type="password" id="regPass" placeholder="नया पासवर्ड बनाएं *" class="w-full border p-2.5 rounded-lg text-sm">
                 <button id="registerBtn" onclick="handleCustomerRegister()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow">Register</button>
             </div>
+
+            <!-- Admin Form -->
             <div id="formAdmin" class="space-y-4 hidden">
                 <input type="text" id="adminIdInput" placeholder="Admin ID या Mobile" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="password" id="adminPassInput" placeholder="Admin Password" class="w-full border p-2.5 rounded-lg text-sm">
@@ -234,7 +259,6 @@
     </div>
 
     <!-- Floating Audio Toggle Button -->
-    <!-- (Added event parameter) -->
     <button onclick="window.toggleAudio(event)" class="fixed bottom-10 right-4 bg-yellow-400 hover:bg-yellow-500 text-blue-900 w-14 h-14 rounded-full shadow-2xl z-50 flex items-center justify-center transition-all duration-300 transform hover:scale-110">
         <i id="audioIcon" class="fas fa-volume-up text-2xl animate-pulse"></i>
     </button>
@@ -419,6 +443,42 @@
             btn.innerHTML = 'Login'; btn.disabled = false;
         };
 
+        // NEW: Forgot Password Logic
+        window.handleForgotPassword = async function() {
+            const phone = document.getElementById('forgotPhone').value.trim();
+            const name = document.getElementById('forgotName').value.trim();
+            const newPass = document.getElementById('forgotNewPass').value.trim();
+
+            if (!phone || !name || !newPass) return alert("Please fill all details correctly!");
+
+            const btn = document.getElementById('forgotBtn');
+            btn.innerHTML = 'Verifying...'; btn.disabled = true;
+
+            try {
+                // Name and Phone match
+                const userDocs = await db.collection("users").where("phone", "==", phone).where("name", "==", name).get();
+                
+                if (userDocs.empty) {
+                    alert("Account Not Found! मोबाइल नंबर या नाम गलत है (Name spelling must match exactly).");
+                } else {
+                    let docId = '';
+                    userDocs.forEach(d => docId = d.id);
+                    // Update the document with new password
+                    await db.collection("users").doc(docId).update({ pass: newPass });
+                    alert("Success! Password Changed Successfully. Please login with your new password.");
+                    
+                    // Clear fields and go back to login
+                    document.getElementById('forgotPhone').value = '';
+                    document.getElementById('forgotName').value = '';
+                    document.getElementById('forgotNewPass').value = '';
+                    window.switchAuthTab('login');
+                }
+            } catch(e) {
+                alert("Server error. Please try again.");
+            }
+            btn.innerHTML = 'Reset Password'; btn.disabled = false;
+        };
+
         window.handleAdminLogin = function() {
             const id = document.getElementById('adminIdInput').value.trim();
             const pass = document.getElementById('adminPassInput').value.trim();
@@ -512,14 +572,36 @@
 
         window.openAuthModal = (t='login') => { document.getElementById('authModal').classList.remove('hidden'); window.switchAuthTab(t); };
         window.closeAuthModal = () => document.getElementById('authModal').classList.add('hidden');
+        
         window.switchAuthTab = (t) => {
-            ['login','register','admin'].forEach(x => {
-                document.getElementById('form'+x.charAt(0).toUpperCase()+x.slice(1)).classList.add('hidden');
-                document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).className = "flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500";
+            // Hide all forms
+            ['login','register','admin','forgot'].forEach(x => {
+                const f = document.getElementById('form'+x.charAt(0).toUpperCase()+x.slice(1));
+                if(f) f.classList.add('hidden');
             });
-            document.getElementById('form'+t.charAt(0).toUpperCase()+t.slice(1)).classList.remove('hidden');
-            document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).className = t==='admin' ? "flex-1 py-2.5 text-sm font-bold border-b-2 border-red-600 text-red-600" : "flex-1 py-2.5 text-sm font-bold border-b-2 border-blue-700 text-blue-700";
+            // Reset tab styles (Forgot doesn't have a top tab, so we only reset the main 3)
+            ['login','register','admin'].forEach(x => {
+                const tb = document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1));
+                if(tb) tb.className = "flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500";
+            });
+            
+            // Show requested form
+            const activeForm = document.getElementById('form'+t.charAt(0).toUpperCase()+t.slice(1));
+            if(activeForm) activeForm.classList.remove('hidden');
+            
+            // Style active tab (if it's not the forgot form)
+            if (t !== 'forgot') {
+                document.getElementById('authTabsContainer').classList.remove('hidden');
+                const activeTab = document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+                if(activeTab) {
+                    activeTab.className = t==='admin' ? "flex-1 py-2.5 text-sm font-bold border-b-2 border-red-600 text-red-600" : "flex-1 py-2.5 text-sm font-bold border-b-2 border-blue-700 text-blue-700";
+                }
+            } else {
+                // Hide top tabs when showing forgot password screen for cleaner UI
+                document.getElementById('authTabsContainer').classList.add('hidden');
+            }
         };
+
         window.logoutUser = () => { if(confirm("Logout?")) { window.currentUser = null; localStorage.removeItem('tzd_current_user'); window.renderHeaderAuth(); } };
         window.filterServices = (c) => { window.currentFilter = c; window.renderFilters(); window.renderServices(); };
         window.toggleAdminModal = () => { document.getElementById('adminModal').classList.toggle('hidden'); document.getElementById('rzpKeyInput').value = window.razorpayKey; };
@@ -530,17 +612,17 @@
 
         // 7. ROBUST PLAY/MUTE TOGGLE VOICE MESSAGE LOGIC
         window.hasSpokenWelcome = false;
-        window.isVoicePlaying = false; // नया स्टेट ट्रैकर (State Tracker)
+        window.isVoicePlaying = false; 
 
         window.triggerSpeech = function() {
             if (!('speechSynthesis' in window)) return;
             
-            window.speechSynthesis.cancel(); // पुरानी रुकी हुई आवाज़ क्लियर करें
-            window.isVoicePlaying = true;    // मार्क करें कि आवाज़ प्ले हो रही है
+            window.speechSynthesis.cancel(); 
+            window.isVoicePlaying = true;    
             
             const icon = document.getElementById('audioIcon');
             if(icon) {
-                icon.className = 'fas fa-volume-up text-2xl text-blue-900 animate-pulse'; // Play Icon
+                icon.className = 'fas fa-volume-up text-2xl text-blue-900 animate-pulse'; 
             }
 
             const speakText = (text, lang, isLastEntry) => {
@@ -549,7 +631,6 @@
                 speech.rate = 0.9;
                 speech.volume = 1.0;
                 
-                // जब आखिरी आवाज़ खत्म हो जाए, तो स्टेट बदलें और आइकन वापस Mute वाला कर दें
                 if (isLastEntry) {
                     speech.onend = function() {
                         window.isVoicePlaying = false;
@@ -557,7 +638,6 @@
                     };
                 }
 
-                // अगर किसी कारण से सिस्टम आवाज़ बीच में रोक दे
                 speech.onerror = function(e) {
                     if (e.error === 'interrupted' || e.error === 'canceled') {
                         window.isVoicePlaying = false;
@@ -576,38 +656,31 @@
             speakText(hinText, "hi-IN", true); 
         };
 
-        // बटन पर क्लिक करने पर काम करने वाला मुख्य फंक्शन
         window.toggleAudio = function(event) {
-            // यह लाइन बहुत ज़रूरी है: इससे बैकग्राउंड का 'click' इवेंट ब्लॉक हो जाएगा (No Event Clash)
             if (event) event.stopPropagation();
             
-            window.hasSpokenWelcome = true; // मार्क करें ताकि स्क्रीन टच से दोबारा न बजे
+            window.hasSpokenWelcome = true; 
             
             const icon = document.getElementById('audioIcon');
             
             if (window.isVoicePlaying) {
-                // अगर आवाज़ चल रही है, तो उसे तुरंत बंद (Mute) करें
                 window.speechSynthesis.cancel();
                 window.isVoicePlaying = false;
                 if(icon) icon.className = 'fas fa-volume-mute text-2xl text-red-600';
             } else {
-                // अगर आवाज़ बंद है, तो फिर से प्ले (Play) करें
                 window.triggerSpeech();
             }
         };
 
-        // वेबसाइट खुलने पर एक बार ऑटोप्ले करने वाला लॉजिक
         window.autoPlayWelcomeAudio = function(event) {
             if (!window.hasSpokenWelcome) {
                 window.hasSpokenWelcome = true; 
                 window.triggerSpeech();
             }
-            // एक बार चल जाने के बाद लिसनर्स हटा दें
             document.removeEventListener('click', window.autoPlayWelcomeAudio);
             document.removeEventListener('touchstart', window.autoPlayWelcomeAudio);
         };
 
-        // यूज़र के पहले टच या क्लिक को कैच करने वाले ग्लोबल लिसनर्स
         document.addEventListener('click', window.autoPlayWelcomeAudio);
         document.addEventListener('touchstart', window.autoPlayWelcomeAudio);
 
