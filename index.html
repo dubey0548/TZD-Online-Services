@@ -207,20 +207,22 @@
                 <input type="password" id="adminPassInput" placeholder="Admin Password" class="w-full border p-2.5 rounded-lg text-sm">
                 <button onclick="handleAdminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow">Admin Login</button>
                 
-                <!-- NEW: Admin Forgot Password Link -->
                 <div class="text-right mt-1">
-                    <button onclick="switchAuthTab('adminForgot')" class="text-xs text-red-600 hover:text-red-800 font-semibold hover:underline">Forgot Admin Password?</button>
+                    <button onclick="switchAuthTab('adminForgot')" class="text-xs text-red-600 hover:text-red-800 font-semibold hover:underline"><i class="fas fa-shield-alt"></i> Forgot Admin Password?</button>
                 </div>
             </div>
 
-            <!-- NEW: Admin Forgot Password Form -->
+            <!-- Admin Forgot Password Form -->
             <div id="formAdminForgot" class="space-y-3 hidden">
-                <h3 class="font-bold text-gray-800 text-center mb-1">एडमिन पासवर्ड रीसेट</h3>
-                <p class="text-xs text-red-500 text-center mb-3">सिक्योरिटी के लिए अपना Admin ID और रजिस्टर्ड मोबाइल नंबर डालें।</p>
+                <h3 class="font-bold text-gray-800 text-center mb-1">एडमिन पासवर्ड रिकवरी</h3>
+                <p class="text-xs text-red-500 text-center mb-3">अनाधिकृत एक्सेस रोकने के लिए अपना <b>Secret Recovery PIN</b> डालें।</p>
+                
                 <input type="text" id="forgotAdminId" placeholder="Admin ID (उदा: admin) *" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="tel" id="forgotAdminPhone" placeholder="एडमिन मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
+                <input type="password" id="forgotAdminSecret" placeholder="Secret Recovery PIN *" class="w-full border p-2.5 rounded-lg text-sm bg-red-50 border-red-200">
                 <input type="password" id="forgotAdminNewPass" placeholder="नया एडमिन पासवर्ड बनाएं *" class="w-full border p-2.5 rounded-lg text-sm">
-                <button id="forgotAdminBtn" onclick="handleAdminForgotPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow mt-2">Reset Admin Password</button>
+                
+                <button id="forgotAdminBtn" onclick="handleAdminForgotPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow mt-2"><i class="fas fa-lock"></i> Reset Admin Password</button>
                 <div class="text-center mt-3">
                     <button onclick="switchAuthTab('admin')" class="text-xs text-blue-600 hover:underline"><i class="fas fa-arrow-left"></i> Back to Admin Login</button>
                 </div>
@@ -236,24 +238,38 @@
                 <h3 class="text-xl font-bold text-gray-900"><i class="fas fa-user-shield text-red-600 mr-2"></i>एडमिन कंट्रोल पैनल</h3>
                 <button onclick="toggleAdminModal()" class="text-gray-500 hover:text-red-600 text-2xl font-bold">&times;</button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            
+            <!-- 3-Column Grid for Settings -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- 1. Razorpay Key -->
                 <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
-                    <h4 class="font-bold text-blue-900 mb-1 text-sm"><i class="fas fa-key mr-2"></i>1. Razorpay Key सेटिंग</h4>
+                    <h4 class="font-bold text-blue-900 mb-1 text-sm"><i class="fas fa-key mr-2"></i>1. Razorpay Key</h4>
                     <div class="flex gap-2 mt-2">
-                        <input type="text" id="rzpKeyInput" placeholder="Enter Razorpay Key ID" class="flex-1 border p-2 rounded-lg text-xs">
+                        <input type="text" id="rzpKeyInput" placeholder="Enter Razorpay Key" class="flex-1 border p-2 rounded-lg text-xs">
                         <button onclick="saveRazorpayKey()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-xs font-bold">Save</button>
                     </div>
                 </div>
+                <!-- 2. Admin Password -->
                 <div class="bg-red-50 border border-red-200 p-4 rounded-xl">
-                    <h4 class="font-bold text-red-900 mb-1 text-sm"><i class="fas fa-lock mr-2"></i>2. एडमिन पासवर्ड बदलें</h4>
+                    <h4 class="font-bold text-red-900 mb-1 text-sm"><i class="fas fa-lock mr-2"></i>2. एडमिन पासवर्ड</h4>
                     <div class="flex gap-2 mt-2">
                         <input type="text" id="newAdminPassInput" placeholder="नया पासवर्ड लिखें" class="flex-1 border p-2 rounded-lg text-xs">
                         <button onclick="saveAdminPassword()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold">Update</button>
                     </div>
                 </div>
+                <!-- 3. NEW: Secret Recovery PIN -->
+                <div class="bg-purple-50 border border-purple-200 p-4 rounded-xl">
+                    <h4 class="font-bold text-purple-900 mb-1 text-sm"><i class="fas fa-user-secret mr-2"></i>3. Recovery PIN बदलें</h4>
+                    <div class="flex gap-2 mt-2">
+                        <input type="text" id="newAdminSecretInput" placeholder="नया PIN लिखें" class="flex-1 border p-2 rounded-lg text-xs">
+                        <button onclick="saveAdminSecret()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-xs font-bold">Update</button>
+                    </div>
+                </div>
             </div>
+
+            <!-- Adding Service -->
             <div class="bg-gray-50 border p-4 rounded-xl mb-6">
-                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-plus-circle text-green-600 mr-2"></i>3. नई सर्विस जोड़ें</h4>
+                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-plus-circle text-green-600 mr-2"></i>4. नई सर्विस जोड़ें</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                     <input type="text" id="newTitle" placeholder="सर्विस का नाम" class="border p-2.5 rounded-lg text-sm">
                     <input type="text" id="newCat" placeholder="कैटेगरी (जैसे: Form, Ticket)" class="border p-2.5 rounded-lg text-sm">
@@ -265,12 +281,14 @@
                     <i class="fas fa-plus mr-1"></i> Add Service
                 </button>
             </div>
+            
             <div class="mb-6">
-                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-edit text-yellow-600 mr-2"></i>4. मौजूद सर्विस (डिलीट करें)</h4>
+                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-edit text-yellow-600 mr-2"></i>5. मौजूद सर्विस (डिलीट करें)</h4>
                 <div id="adminServiceList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
             </div>
+            
             <div class="border-t pt-4">
-                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-users text-blue-600 mr-2"></i>5. रजिस्टर्ड ग्राहक (Customers)</h4>
+                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-users text-blue-600 mr-2"></i>6. रजिस्टर्ड ग्राहक (Customers)</h4>
                 <div id="adminCustomerList" class="space-y-2 max-h-48 overflow-y-auto text-xs"></div>
             </div>
         </div>
@@ -309,6 +327,9 @@
         
         window.adminPass = localStorage.getItem('tzd_admin_pass') || 'admin123';
         window.razorpayKey = localStorage.getItem('tzd_rzp_key') || 'rzp_test_Tr1WFrtTudQuZn';
+        
+        // NEW: Load Secret PIN from Local Storage (Default is TZD@2026)
+        window.adminSecretPin = localStorage.getItem('tzd_admin_secret_pin') || 'TZD@2026';
 
         // 3. LOAD DATA FROM FIREBASE
         window.loadData = async function() {
@@ -461,7 +482,6 @@
             btn.innerHTML = 'Login'; btn.disabled = false;
         };
 
-        // Customer Forgot Password Logic
         window.handleForgotPassword = async function() {
             const phone = document.getElementById('forgotPhone').value.trim();
             const name = document.getElementById('forgotName').value.trim();
@@ -509,28 +529,42 @@
             }
         };
 
-        // NEW: Admin Forgot Password Logic
         window.handleAdminForgotPassword = function() {
             const id = document.getElementById('forgotAdminId').value.trim().toLowerCase();
             const phone = document.getElementById('forgotAdminPhone').value.trim();
+            const secret = document.getElementById('forgotAdminSecret').value.trim();
             const newPass = document.getElementById('forgotAdminNewPass').value.trim();
 
-            if (!id || !phone || !newPass) return alert("कृपया सभी जानकारी भरें!");
+            if (!id || !phone || !secret || !newPass) return alert("कृपया सभी जानकारी भरें!");
 
-            // Admin verification (Hardcoded check for security since it's local)
-            if (id === 'admin' && phone === '8416862196') {
+            // अब हार्डकोड की जगह डाइनेमिक PIN का इस्तेमाल होगा
+            const ADMIN_MASTER_PIN = window.adminSecretPin; 
+
+            if (id === 'admin' && phone === '8416862196' && secret === ADMIN_MASTER_PIN) {
                 window.adminPass = newPass;
-                localStorage.setItem('tzd_admin_pass', newPass); // Save new pass in browser
+                localStorage.setItem('tzd_admin_pass', newPass); 
                 alert("Success! Admin Password Changed Successfully.");
                 
-                // Clear fields and go back to admin login
                 document.getElementById('forgotAdminId').value = '';
                 document.getElementById('forgotAdminPhone').value = '';
+                document.getElementById('forgotAdminSecret').value = '';
                 document.getElementById('forgotAdminNewPass').value = '';
                 window.switchAuthTab('admin');
             } else {
-                alert("Authentication Failed! Admin ID या Mobile Number गलत है।");
+                alert("Authentication Failed! जानकारी या Secret Recovery PIN गलत है।");
             }
+        };
+
+        // NEW: Secret PIN Change Logic (Inside Admin Panel)
+        window.saveAdminSecret = function() {
+            const newSecret = document.getElementById('newAdminSecretInput').value.trim();
+            if(!newSecret) return alert("कृपया नया Secret Recovery PIN दर्ज करें!");
+            
+            window.adminSecretPin = newSecret;
+            localStorage.setItem('tzd_admin_secret_pin', newSecret);
+            
+            alert("Secret Recovery PIN सफलतापूर्वक अपडेट हो गया! कृपया इसे याद रखें।");
+            document.getElementById('newAdminSecretInput').value = '';
         };
 
         window.addNewService = async function() {
@@ -613,7 +647,6 @@
         window.closeAuthModal = () => document.getElementById('authModal').classList.add('hidden');
         
         window.switchAuthTab = (t) => {
-            // Updated to include adminForgot
             ['login','register','admin','forgot', 'adminForgot'].forEach(x => {
                 const f = document.getElementById('form'+x.charAt(0).toUpperCase()+x.slice(1));
                 if(f) f.classList.add('hidden');
@@ -627,7 +660,6 @@
             const activeForm = document.getElementById('form'+t.charAt(0).toUpperCase()+t.slice(1));
             if(activeForm) activeForm.classList.remove('hidden');
             
-            // Hide tabs for both Customer Forgot and Admin Forgot views
             if (t !== 'forgot' && t !== 'adminForgot') {
                 document.getElementById('authTabsContainer').classList.remove('hidden');
                 const activeTab = document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
@@ -647,7 +679,7 @@
         window.saveAdminPassword = () => { window.adminPass = document.getElementById('newAdminPassInput').value; localStorage.setItem('tzd_admin_pass', window.adminPass); alert("Password Updated!"); };
 
 
-        // 7. ROBUST PLAY/MUTE TOGGLE VOICE MESSAGE LOGIC
+        // 7. PLAY/MUTE TOGGLE VOICE MESSAGE LOGIC
         window.hasSpokenWelcome = false;
         window.isVoicePlaying = false; 
 
