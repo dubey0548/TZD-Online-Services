@@ -168,21 +168,20 @@
                 <button id="tabAdmin" onclick="switchAuthTab('admin')" class="flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-red-600">एडमिन</button>
             </div>
             
-            <!-- Login Form -->
+            <!-- Login Form (Customer) -->
             <div id="formLogin" class="space-y-4">
                 <input type="tel" id="loginPhone" placeholder="10 अंकों का मोबाइल नंबर" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <input type="password" id="loginPass" placeholder="अपना पासवर्ड डालें" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <button id="loginBtn" onclick="handleCustomerLogin()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow">Login</button>
                 
-                <!-- NEW: Forgot Password Link -->
                 <div class="text-right mt-1">
                     <button onclick="switchAuthTab('forgot')" class="text-xs text-blue-600 hover:text-blue-800 font-semibold hover:underline">Forgot Password? (पासवर्ड भूल गए?)</button>
                 </div>
             </div>
 
-            <!-- Forgot Password Form -->
+            <!-- Forgot Password Form (Customer) -->
             <div id="formForgot" class="space-y-3 hidden">
-                <h3 class="font-bold text-gray-800 text-center mb-1">पासवर्ड रीसेट करें</h3>
+                <h3 class="font-bold text-gray-800 text-center mb-1">पासवर्ड रीसेट करें (ग्राहक)</h3>
                 <p class="text-xs text-red-500 text-center mb-3">सिक्योरिटी के लिए अपना रजिस्टर किया हुआ नाम और मोबाइल नंबर डालें।</p>
                 <input type="tel" id="forgotPhone" placeholder="रजिस्टर्ड मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="text" id="forgotName" placeholder="रजिस्टर्ड पूरा नाम (Exact Name) *" class="w-full border p-2.5 rounded-lg text-sm">
@@ -207,7 +206,26 @@
                 <input type="text" id="adminIdInput" placeholder="Admin ID या Mobile" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="password" id="adminPassInput" placeholder="Admin Password" class="w-full border p-2.5 rounded-lg text-sm">
                 <button onclick="handleAdminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow">Admin Login</button>
+                
+                <!-- NEW: Admin Forgot Password Link -->
+                <div class="text-right mt-1">
+                    <button onclick="switchAuthTab('adminForgot')" class="text-xs text-red-600 hover:text-red-800 font-semibold hover:underline">Forgot Admin Password?</button>
+                </div>
             </div>
+
+            <!-- NEW: Admin Forgot Password Form -->
+            <div id="formAdminForgot" class="space-y-3 hidden">
+                <h3 class="font-bold text-gray-800 text-center mb-1">एडमिन पासवर्ड रीसेट</h3>
+                <p class="text-xs text-red-500 text-center mb-3">सिक्योरिटी के लिए अपना Admin ID और रजिस्टर्ड मोबाइल नंबर डालें।</p>
+                <input type="text" id="forgotAdminId" placeholder="Admin ID (उदा: admin) *" class="w-full border p-2.5 rounded-lg text-sm">
+                <input type="tel" id="forgotAdminPhone" placeholder="एडमिन मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
+                <input type="password" id="forgotAdminNewPass" placeholder="नया एडमिन पासवर्ड बनाएं *" class="w-full border p-2.5 rounded-lg text-sm">
+                <button id="forgotAdminBtn" onclick="handleAdminForgotPassword()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow mt-2">Reset Admin Password</button>
+                <div class="text-center mt-3">
+                    <button onclick="switchAuthTab('admin')" class="text-xs text-blue-600 hover:underline"><i class="fas fa-arrow-left"></i> Back to Admin Login</button>
+                </div>
+            </div>
+            
         </div>
     </div>
 
@@ -443,7 +461,7 @@
             btn.innerHTML = 'Login'; btn.disabled = false;
         };
 
-        // NEW: Forgot Password Logic
+        // Customer Forgot Password Logic
         window.handleForgotPassword = async function() {
             const phone = document.getElementById('forgotPhone').value.trim();
             const name = document.getElementById('forgotName').value.trim();
@@ -455,7 +473,6 @@
             btn.innerHTML = 'Verifying...'; btn.disabled = true;
 
             try {
-                // Name and Phone match
                 const userDocs = await db.collection("users").where("phone", "==", phone).where("name", "==", name).get();
                 
                 if (userDocs.empty) {
@@ -463,11 +480,9 @@
                 } else {
                     let docId = '';
                     userDocs.forEach(d => docId = d.id);
-                    // Update the document with new password
                     await db.collection("users").doc(docId).update({ pass: newPass });
                     alert("Success! Password Changed Successfully. Please login with your new password.");
                     
-                    // Clear fields and go back to login
                     document.getElementById('forgotPhone').value = '';
                     document.getElementById('forgotName').value = '';
                     document.getElementById('forgotNewPass').value = '';
@@ -491,6 +506,30 @@
                 window.toggleAdminModal();
             } else {
                 alert("Wrong Admin ID or Password!");
+            }
+        };
+
+        // NEW: Admin Forgot Password Logic
+        window.handleAdminForgotPassword = function() {
+            const id = document.getElementById('forgotAdminId').value.trim().toLowerCase();
+            const phone = document.getElementById('forgotAdminPhone').value.trim();
+            const newPass = document.getElementById('forgotAdminNewPass').value.trim();
+
+            if (!id || !phone || !newPass) return alert("कृपया सभी जानकारी भरें!");
+
+            // Admin verification (Hardcoded check for security since it's local)
+            if (id === 'admin' && phone === '8416862196') {
+                window.adminPass = newPass;
+                localStorage.setItem('tzd_admin_pass', newPass); // Save new pass in browser
+                alert("Success! Admin Password Changed Successfully.");
+                
+                // Clear fields and go back to admin login
+                document.getElementById('forgotAdminId').value = '';
+                document.getElementById('forgotAdminPhone').value = '';
+                document.getElementById('forgotAdminNewPass').value = '';
+                window.switchAuthTab('admin');
+            } else {
+                alert("Authentication Failed! Admin ID या Mobile Number गलत है।");
             }
         };
 
@@ -574,30 +613,28 @@
         window.closeAuthModal = () => document.getElementById('authModal').classList.add('hidden');
         
         window.switchAuthTab = (t) => {
-            // Hide all forms
-            ['login','register','admin','forgot'].forEach(x => {
+            // Updated to include adminForgot
+            ['login','register','admin','forgot', 'adminForgot'].forEach(x => {
                 const f = document.getElementById('form'+x.charAt(0).toUpperCase()+x.slice(1));
                 if(f) f.classList.add('hidden');
             });
-            // Reset tab styles (Forgot doesn't have a top tab, so we only reset the main 3)
+            
             ['login','register','admin'].forEach(x => {
                 const tb = document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1));
                 if(tb) tb.className = "flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500";
             });
             
-            // Show requested form
             const activeForm = document.getElementById('form'+t.charAt(0).toUpperCase()+t.slice(1));
             if(activeForm) activeForm.classList.remove('hidden');
             
-            // Style active tab (if it's not the forgot form)
-            if (t !== 'forgot') {
+            // Hide tabs for both Customer Forgot and Admin Forgot views
+            if (t !== 'forgot' && t !== 'adminForgot') {
                 document.getElementById('authTabsContainer').classList.remove('hidden');
                 const activeTab = document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
                 if(activeTab) {
                     activeTab.className = t==='admin' ? "flex-1 py-2.5 text-sm font-bold border-b-2 border-red-600 text-red-600" : "flex-1 py-2.5 text-sm font-bold border-b-2 border-blue-700 text-blue-700";
                 }
             } else {
-                // Hide top tabs when showing forgot password screen for cleaner UI
                 document.getElementById('authTabsContainer').classList.add('hidden');
             }
         };
