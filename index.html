@@ -43,7 +43,6 @@
             100% { background-position: 0% 50%; }
         }
         
-        /* रसीद (Receipt) का डिज़ाइन */
         .receipt-container {
             background: #fff;
             padding: 20px;
@@ -207,6 +206,25 @@
         </div>
     </div>
 
+    <!-- NEW: CUSTOMER DASHBOARD MODAL -->
+    <div id="customerDashboardModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
+            <button onclick="closeCustomerDashboard()" class="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl font-bold">&times;</button>
+            
+            <h3 class="text-xl font-bold text-blue-900 border-b pb-3 mb-4"><i class="fas fa-user-circle mr-2"></i>मेरी प्रोफाइल और पेमेंट्स</h3>
+            
+            <div class="mb-4 bg-gray-50 p-4 rounded-xl border">
+                <p class="text-sm"><strong>नाम:</strong> <span id="custProfileName"></span></p>
+                <p class="text-sm"><strong>मोबाइल:</strong> <span id="custProfilePhone"></span></p>
+            </div>
+            
+            <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-history text-green-600 mr-2"></i>मेरा पेमेंट रिकॉर्ड (Payment History)</h4>
+            <div id="customerTransactionList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <!-- Transactions will load here -->
+            </div>
+        </div>
+    </div>
+
     <!-- AUTH MODAL -->
     <div id="authModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
@@ -218,6 +236,7 @@
                 <button id="tabAdmin" onclick="switchAuthTab('admin')" class="flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-red-600">एडमिन</button>
             </div>
             
+            <!-- Login Form -->
             <div id="formLogin" class="space-y-4">
                 <input type="tel" id="loginPhone" placeholder="10 अंकों का मोबाइल नंबर" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <input type="password" id="loginPass" placeholder="अपना पासवर्ड डालें" class="w-full border p-2.5 rounded-lg text-sm outline-none">
@@ -227,6 +246,7 @@
                 </div>
             </div>
 
+            <!-- Forgot Password -->
             <div id="formForgot" class="space-y-3 hidden">
                 <h3 class="font-bold text-gray-800 text-center mb-1">पासवर्ड रीसेट करें (ग्राहक)</h3>
                 <p class="text-xs text-red-500 text-center mb-3">सिक्योरिटी के लिए अपना रजिस्टर किया हुआ नाम और मोबाइल नंबर डालें।</p>
@@ -239,6 +259,7 @@
                 </div>
             </div>
 
+            <!-- Register Form -->
             <div id="formRegister" class="space-y-3 hidden">
                 <input type="text" id="regName" placeholder="पूरा नाम (Full Name) *" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="tel" id="regPhone" placeholder="10 अंकों का मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
@@ -247,6 +268,7 @@
                 <button id="registerBtn" onclick="handleCustomerRegister()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow">Register</button>
             </div>
 
+            <!-- Admin Login Form -->
             <div id="formAdmin" class="space-y-4 hidden">
                 <input type="text" id="adminIdInput" placeholder="Admin ID या Mobile" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="password" id="adminPassInput" placeholder="Admin Password" class="w-full border p-2.5 rounded-lg text-sm">
@@ -256,6 +278,7 @@
                 </div>
             </div>
 
+            <!-- Admin Forgot Password -->
             <div id="formAdminForgot" class="space-y-3 hidden">
                 <h3 class="font-bold text-gray-800 text-center mb-1">एडमिन पासवर्ड रिकवरी</h3>
                 <p class="text-xs text-red-500 text-center mb-3">अनाधिकृत एक्सेस रोकने के लिए अपना <b>Secret Recovery PIN</b> डालें।</p>
@@ -273,7 +296,7 @@
 
     <!-- ADMIN PANEL MODAL -->
     <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex justify-center items-center p-4">
-        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+        <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h3 class="text-xl font-bold text-gray-900"><i class="fas fa-user-shield text-red-600 mr-2"></i>एडमिन कंट्रोल पैनल</h3>
                 <button onclick="toggleAdminModal()" class="text-gray-500 hover:text-red-600 text-2xl font-bold">&times;</button>
@@ -321,16 +344,25 @@
                 </button>
             </div>
             
-            <!-- Delete Service -->
-            <div class="mb-6">
-                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-edit text-yellow-600 mr-2"></i>5. मौजूद सर्विस (डिलीट करें)</h4>
-                <div id="adminServiceList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Delete Service -->
+                <div class="border border-gray-200 p-4 rounded-xl">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-edit text-yellow-600 mr-2"></i>5. सर्विस लिस्ट (डिलीट करें)</h4>
+                    <div id="adminServiceList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+                </div>
+                <!-- Customer List -->
+                <div class="border border-gray-200 p-4 rounded-xl">
+                    <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-users text-blue-600 mr-2"></i>6. रजिस्टर्ड ग्राहक (Customers)</h4>
+                    <div id="adminCustomerList" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
+                </div>
             </div>
-            
-            <!-- Customer List -->
-            <div class="border-t pt-4">
-                <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-users text-blue-600 mr-2"></i>6. रजिस्टर्ड ग्राहक (Customers)</h4>
-                <div id="adminCustomerList" class="space-y-2 max-h-48 overflow-y-auto text-xs"></div>
+
+            <!-- NEW: ADMIN TRANSACTION HISTORY -->
+            <div class="border-t mt-6 pt-6">
+                <h4 class="font-bold text-gray-800 text-lg mb-4"><i class="fas fa-file-invoice-dollar text-green-600 mr-2"></i>7. पेमेंट हिस्ट्री (Transactions Tracker)</h4>
+                <div id="adminTransactionList" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                    <!-- Transactions will load here -->
+                </div>
             </div>
         </div>
     </div>
@@ -357,6 +389,7 @@
         // 2. SAFE GLOBAL VARIABLES
         window.services = [];
         window.registeredUsers = [];
+        window.transactions = []; // NEW: Array for transactions
         window.currentFilter = 'All';
         
         try {
@@ -370,7 +403,7 @@
         window.razorpayKey = localStorage.getItem('tzd_rzp_key') || 'rzp_live_यहां_अपनी_असली_की_डालें';
         window.adminSecretPin = localStorage.getItem('tzd_admin_secret_pin') || 'TZD@2026';
 
-        // 3. LOAD DATA FROM FIREBASE
+        // 3. LOAD DATA FROM FIREBASE (Updated to fetch Transactions)
         window.loadData = async function() {
             try {
                 const s_query = await db.collection("services").get();
@@ -380,14 +413,22 @@
                 const u_query = await db.collection("users").get();
                 window.registeredUsers = [];
                 u_query.forEach(d => window.registeredUsers.push({ id: d.id, ...d.data() }));
+
+                // Fetch Transactions
+                const t_query = await db.collection("transactions").get();
+                window.transactions = [];
+                t_query.forEach(d => window.transactions.push({ id: d.id, ...d.data() }));
+                // Sort by Date Descending (Newest first)
+                window.transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 window.renderFilters();
                 window.renderServices();
                 window.renderAdminList();
                 window.renderCustomerList();
+                window.renderAdminTransactions(); // Render Admin History
             } catch (error) {
                 console.error("Data Load Error:", error);
-                document.getElementById('servicesGrid').innerHTML = '<p class="text-red-500 col-span-full text-center p-4 border border-red-300 rounded bg-red-50">डेटाबेस से कनेक्ट नहीं हो पा रहा है। कृपया इंटरनेट चेक करें या Firebase Rules सेट करें।<br><small>Error: ' + error.message + '</small></p>';
+                document.getElementById('servicesGrid').innerHTML = '<p class="text-red-500 col-span-full text-center p-4 border border-red-300 rounded bg-red-50">डेटाबेस से कनेक्ट नहीं हो पा रहा है।</p>';
             }
         };
 
@@ -409,7 +450,7 @@
             grid.innerHTML = '';
             const filtered = window.currentFilter === 'All' ? window.services : window.services.filter(s => s.category === window.currentFilter);
             if(filtered.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center">अभी तक कोई सर्विस एड नहीं की गई है। एडमिन पैनल से सर्विस जोड़ें।</p>';
+                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center">अभी तक कोई सर्विस एड नहीं की गई है।</p>';
                 return;
             }
             filtered.forEach(s => {
@@ -445,8 +486,12 @@
                 <button onclick="logoutUser()" class="bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-xs font-bold">Logout</button>`;
             } else {
                 guestBanner.classList.add('hidden');
-                authArea.innerHTML = `<div class="bg-green-50 text-green-900 px-3 py-1.5 rounded-lg text-xs shadow-sm"><b>${window.currentUser.name}</b></div>
-                <button onclick="logoutUser()" class="bg-red-50 text-red-600 px-3 py-2 rounded-lg text-xs font-bold">Logout</button>`;
+                // NEW: Customer Profile Button
+                authArea.innerHTML = `
+                <button onclick="openCustomerDashboard()" class="bg-green-50 hover:bg-green-100 border border-green-200 text-green-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">
+                    <i class="fas fa-user-circle mr-1"></i> ${window.currentUser.name}
+                </button>
+                <button onclick="logoutUser()" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-red-100">Logout</button>`;
             }
         };
 
@@ -465,6 +510,55 @@
             list.innerHTML = window.registeredUsers.map(u => `<div class="flex justify-between p-2 border-b">
                 <span>${u.name} - ${u.phone}</span> <a href="https://wa.me/91${u.phone}" target="_blank" class="text-green-600 hover:text-green-800"><i class="fab fa-whatsapp"></i></a>
             </div>`).join('');
+        };
+
+        // NEW: Render Admin Transactions List
+        window.renderAdminTransactions = function() {
+            const list = document.getElementById('adminTransactionList');
+            if(!list) return;
+            if(window.transactions.length === 0) {
+                list.innerHTML = '<p class="text-gray-500">अभी तक कोई पेमेंट नहीं हुआ है।</p>';
+                return;
+            }
+            list.innerHTML = window.transactions.map(t => `
+                <div class="flex flex-col sm:flex-row justify-between items-center p-3 bg-white border rounded-xl shadow-sm hover:shadow-md transition">
+                    <div class="w-full sm:w-auto mb-2 sm:mb-0">
+                        <p class="font-bold text-blue-900">${t.customerName} <span class="text-gray-500 font-normal text-xs">(${t.phone})</span></p>
+                        <p class="text-gray-800 text-sm font-semibold">${t.serviceName} - <span class="text-green-600">₹${t.amount}</span></p>
+                        <p class="text-gray-400 text-[10px] mt-1">${new Date(t.date).toLocaleString('en-IN')} | ID: ${t.paymentId}</p>
+                    </div>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <button onclick="viewPastReceipt('${t.id}')" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg text-xs font-bold"><i class="fas fa-eye"></i> रसीद</button>
+                        <button onclick="shareAdminReceiptWA('${t.id}')" class="flex-1 bg-green-100 hover:bg-green-200 text-green-800 px-3 py-2 rounded-lg text-xs font-bold"><i class="fab fa-whatsapp"></i> भेजें</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        // NEW: Render Customer's Own Transactions List
+        window.renderCustomerTransactions = function() {
+            const list = document.getElementById('customerTransactionList');
+            if(!list || !window.currentUser || window.currentUser.role === 'admin') return;
+            
+            // Set User Details
+            document.getElementById('custProfileName').innerText = window.currentUser.name;
+            document.getElementById('custProfilePhone').innerText = window.currentUser.phone;
+
+            const myTxns = window.transactions.filter(t => t.phone === window.currentUser.phone);
+            if(myTxns.length === 0) { 
+                list.innerHTML = '<p class="text-gray-500 text-center p-4">अभी तक कोई पेमेंट रिकॉर्ड नहीं मिला।</p>'; 
+                return; 
+            }
+            
+            list.innerHTML = myTxns.map(t => `
+                <div class="flex justify-between items-center p-3 bg-blue-50 border border-blue-100 rounded-lg mb-2">
+                    <div>
+                        <p class="font-bold text-blue-900 text-sm">${t.serviceName}</p>
+                        <p class="text-green-700 font-bold text-sm">₹${t.amount} <span class="text-gray-500 font-normal text-[10px] ml-1">${new Date(t.date).toLocaleString('en-IN')}</span></p>
+                    </div>
+                    <button onclick="viewPastReceipt('${t.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold shadow"><i class="fas fa-file-invoice"></i> रसीद</button>
+                </div>
+            `).join('');
         };
 
         // 5. AUTH LOGIC
@@ -571,7 +665,6 @@
             const newPass = document.getElementById('forgotAdminNewPass').value.trim();
 
             if (!id || !phone || !secret || !newPass) return alert("कृपया सभी जानकारी भरें!");
-
             const ADMIN_MASTER_PIN = window.adminSecretPin; 
 
             if (id === 'admin' && phone === '8416862196' && secret === ADMIN_MASTER_PIN) {
@@ -588,7 +681,6 @@
             }
         };
 
-        // Admin Panel Save Functions
         window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_live_यहां_अपनी_असली_की_डालें'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
         window.saveAdminPassword = () => { window.adminPass = document.getElementById('newAdminPassInput').value; localStorage.setItem('tzd_admin_pass', window.adminPass); alert("Password Updated!"); };
         window.saveAdminSecret = function() {
@@ -596,7 +688,7 @@
             if(!newSecret) return alert("कृपया नया Secret Recovery PIN दर्ज करें!");
             window.adminSecretPin = newSecret;
             localStorage.setItem('tzd_admin_secret_pin', newSecret);
-            alert("Secret Recovery PIN सफलतापूर्वक अपडेट हो गया! कृपया इसे याद रखें।");
+            alert("Secret Recovery PIN सफलतापूर्वक अपडेट हो गया!");
             document.getElementById('newAdminSecretInput').value = '';
         };
 
@@ -618,7 +710,6 @@
                 window.services.unshift(ns);
                 
                 window.renderFilters(); window.renderAdminList(); window.renderServices();
-                
                 document.getElementById('newTitle').value = ''; document.getElementById('newCat').value = ''; 
                 document.getElementById('newPrice').value = ''; document.getElementById('newDocs').value = ''; document.getElementById('newDesc').value = '';
                 alert("New Service Added!");
@@ -668,39 +759,65 @@
                 "prefill": { "name": window.currentUser.name, "contact": window.currentUser.phone },
                 "handler": async function (res) {
                     alert("Payment Successful!");
+                    
+                    const newTxn = {
+                        customerName: window.currentUser.name,
+                        phone: window.currentUser.phone,
+                        serviceName: s.title,
+                        amount: s.price,
+                        paymentId: res.razorpay_payment_id,
+                        date: new Date().toISOString()
+                    };
+
                     try {
-                        await db.collection("transactions").add({
-                            customerName: window.currentUser.name,
-                            phone: window.currentUser.phone,
-                            serviceName: s.title,
-                            amount: s.price,
-                            paymentId: res.razorpay_payment_id,
-                            date: new Date().toISOString()
-                        });
+                        const docRef = await db.collection("transactions").add(newTxn);
+                        newTxn.id = docRef.id;
+                        window.transactions.unshift(newTxn); // Add to local array
+                        window.renderAdminTransactions();    // Update Admin UI
+                        window.renderCustomerTransactions(); // Update Customer UI
                     } catch(e) { console.log("Txn save failed", e); }
 
-                    document.getElementById('recName').innerText = window.currentUser.name;
-                    document.getElementById('recPhone').innerText = window.currentUser.phone;
-                    document.getElementById('recService').innerText = s.title;
-                    document.getElementById('recAmount').innerText = '₹' + s.price;
-                    document.getElementById('recTxnId').innerText = res.razorpay_payment_id;
-                    document.getElementById('recDate').innerText = new Date().toLocaleString('en-IN');
-                    
-                    document.getElementById('receiptModal').classList.remove('hidden');
+                    // Show receipt instantly
+                    window.viewPastReceipt(newTxn.id || res.razorpay_payment_id);
                 }
             });
             rzp1.open();
         };
 
-        // NEW 100% WORKING FIX: DOWNLOAD PDF WITH WHITE BACKGROUND
+        // NEW: View Past Receipt Function
+        window.viewPastReceipt = function(txnId) {
+            // Find transaction from array (either by DB id or Razorpay ID)
+            const t = window.transactions.find(x => x.id === txnId || x.paymentId === txnId);
+            if(!t) return alert("Receipt details not found locally. Please refresh.");
+            
+            document.getElementById('recName').innerText = t.customerName;
+            document.getElementById('recPhone').innerText = t.phone;
+            document.getElementById('recService').innerText = t.serviceName;
+            document.getElementById('recAmount').innerText = '₹' + t.amount;
+            document.getElementById('recTxnId').innerText = t.paymentId;
+            document.getElementById('recDate').innerText = new Date(t.date).toLocaleString('en-IN');
+            
+            document.getElementById('receiptModal').classList.remove('hidden');
+            
+            // If viewing from customer dashboard, close dashboard so receipt is visible clearly
+            document.getElementById('customerDashboardModal').classList.add('hidden');
+        };
+
+        // NEW: Admin Direct Share WA
+        window.shareAdminReceiptWA = function(txnId) {
+            const t = window.transactions.find(x => x.id === txnId);
+            if(!t) return;
+            const text = `*TZD PAYMENT RECEIPT* ✅\n\n*Name:* ${t.customerName}\n*Service:* ${t.serviceName}\n*Amount Paid:* ₹${t.amount}\n*Txn ID:* ${t.paymentId}\n*Date:* ${new Date(t.date).toLocaleString('en-IN')}\n\nThank you for using TZD Online Services!`;
+            // Send directly to that customer's number
+            window.open(`https://wa.me/91${t.phone}?text=${encodeURIComponent(text)}`, '_blank');
+        };
+
+        // DOWNLOAD PDF WITH WHITE BACKGROUND
         window.downloadReceiptPDF = function() {
             const originalElement = document.getElementById('receiptContent');
-            
-            // Modal के इशू को फिक्स करने के लिए रसीद की एक कॉपी (Clone) बनाएँ
             const clone = originalElement.cloneNode(true);
             const tempDiv = document.createElement('div');
             
-            // इसे स्क्रीन के पीछे छिपा दें ताकि वेबसाइट का डिज़ाइन ख़राब न हो
             tempDiv.style.position = 'absolute';
             tempDiv.style.top = '-9999px'; 
             tempDiv.style.left = '0';
@@ -708,7 +825,6 @@
             tempDiv.style.background = '#ffffff';
             tempDiv.style.padding = '20px';
             tempDiv.appendChild(clone);
-            
             document.body.appendChild(tempDiv);
 
             const opt = {
@@ -719,7 +835,6 @@
                 jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
             };
             
-            // PDF जनरेट करें और फिर उस छिपी हुई कॉपी को डिलीट कर दें
             html2pdf().set(opt).from(tempDiv).save().then(() => {
                 document.body.removeChild(tempDiv);
             });
@@ -734,9 +849,17 @@
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         };
 
-        // Modal Controls
+        // Modals
+        window.openCustomerDashboard = function() {
+            document.getElementById('customerDashboardModal').classList.remove('hidden');
+            window.renderCustomerTransactions();
+        };
+        window.closeCustomerDashboard = function() {
+            document.getElementById('customerDashboardModal').classList.add('hidden');
+        };
         window.openAuthModal = (t='login') => { document.getElementById('authModal').classList.remove('hidden'); window.switchAuthTab(t); };
         window.closeAuthModal = () => document.getElementById('authModal').classList.add('hidden');
+        
         window.switchAuthTab = (t) => {
             ['login','register','admin','forgot', 'adminForgot'].forEach(x => {
                 const f = document.getElementById('form'+x.charAt(0).toUpperCase()+x.slice(1));
@@ -763,10 +886,9 @@
         window.toggleAdminModal = () => { document.getElementById('adminModal').classList.toggle('hidden'); document.getElementById('rzpKeyInput').value = window.razorpayKey; };
         window.requireLogin = () => { if(!window.currentUser) { alert("Please login first!"); window.openAuthModal('login'); return false; } return true; };
 
-        // 7. VOICE MESSAGE LOGIC
+        // 7. VOICE LOGIC
         window.hasSpokenWelcome = false;
         window.isVoicePlaying = false; 
-
         window.triggerSpeech = function() {
             if (!('speechSynthesis' in window)) return;
             window.speechSynthesis.cancel(); 
@@ -779,32 +901,25 @@
                 speech.lang = lang;
                 speech.rate = 0.9;
                 speech.volume = 1.0;
-                
                 if (isLastEntry) {
                     speech.onend = function() {
                         window.isVoicePlaying = false;
                         if(icon) icon.className = 'fas fa-volume-mute text-2xl text-red-600';
                     };
                 }
-                speech.onerror = function(e) {
-                    if (e.error === 'interrupted' || e.error === 'canceled') window.isVoicePlaying = false;
-                };
+                speech.onerror = function(e) { if (e.error === 'interrupted' || e.error === 'canceled') window.isVoicePlaying = false; };
                 window.speechSynthesis.speak(speech);
             };
-
-            const engText = "Welcome to T Z D Online Services, how may I assist you?";
-            const hinText = "टी जेड डी जन सेवा केंद्र में आपका स्वागत है। मैं आपकी किस प्रकार सहायता कर सकता हूं?";
-            speakText(engText, "en-IN", false);
-            speakText(hinText, "hi-IN", false);
-            speakText(engText, "en-IN", false);
-            speakText(hinText, "hi-IN", true); 
+            speakText("Welcome to T Z D Online Services, how may I assist you?", "en-IN", false);
+            speakText("टी जेड डी जन सेवा केंद्र में आपका स्वागत है। मैं आपकी किस प्रकार सहायता कर सकता हूं?", "hi-IN", false);
+            speakText("Welcome to T Z D Online Services, how may I assist you?", "en-IN", false);
+            speakText("टी जेड डी जन सेवा केंद्र में आपका स्वागत है। मैं आपकी किस प्रकार सहायता कर सकता हूं?", "hi-IN", true); 
         };
 
         window.toggleAudio = function(event) {
             if (event) event.stopPropagation();
             window.hasSpokenWelcome = true; 
             const icon = document.getElementById('audioIcon');
-            
             if (window.isVoicePlaying) {
                 window.speechSynthesis.cancel();
                 window.isVoicePlaying = false;
