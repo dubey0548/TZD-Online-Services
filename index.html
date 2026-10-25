@@ -12,7 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     
-    <!-- NEW: HTML to PDF Library (बिलकुल फ्री रसीद बनाने के लिए) -->
+    <!-- HTML to PDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -170,7 +170,7 @@
         <p>© 2026 TZD Online Services & TZD Jan Sewa Kendra, Gorakhpur. All Rights Reserved.</p>
     </footer>
 
-    <!-- NEW: PAYMENT RECEIPT MODAL -->
+    <!-- PAYMENT RECEIPT MODAL -->
     <div id="receiptModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="document.getElementById('receiptModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl font-bold">&times;</button>
@@ -218,6 +218,7 @@
                 <button id="tabAdmin" onclick="switchAuthTab('admin')" class="flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-red-600">एडमिन</button>
             </div>
             
+            <!-- Login Form -->
             <div id="formLogin" class="space-y-4">
                 <input type="tel" id="loginPhone" placeholder="10 अंकों का मोबाइल नंबर" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <input type="password" id="loginPass" placeholder="अपना पासवर्ड डालें" class="w-full border p-2.5 rounded-lg text-sm outline-none">
@@ -227,6 +228,7 @@
                 </div>
             </div>
 
+            <!-- Forgot Password (Customer) -->
             <div id="formForgot" class="space-y-3 hidden">
                 <h3 class="font-bold text-gray-800 text-center mb-1">पासवर्ड रीसेट करें (ग्राहक)</h3>
                 <p class="text-xs text-red-500 text-center mb-3">सिक्योरिटी के लिए अपना रजिस्टर किया हुआ नाम और मोबाइल नंबर डालें।</p>
@@ -239,6 +241,7 @@
                 </div>
             </div>
 
+            <!-- Register Form -->
             <div id="formRegister" class="space-y-3 hidden">
                 <input type="text" id="regName" placeholder="पूरा नाम (Full Name) *" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="tel" id="regPhone" placeholder="10 अंकों का मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
@@ -247,6 +250,7 @@
                 <button id="registerBtn" onclick="handleCustomerRegister()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow">Register</button>
             </div>
 
+            <!-- Admin Login Form -->
             <div id="formAdmin" class="space-y-4 hidden">
                 <input type="text" id="adminIdInput" placeholder="Admin ID या Mobile" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="password" id="adminPassInput" placeholder="Admin Password" class="w-full border p-2.5 rounded-lg text-sm">
@@ -256,6 +260,7 @@
                 </div>
             </div>
 
+            <!-- Admin Forgot Password -->
             <div id="formAdminForgot" class="space-y-3 hidden">
                 <h3 class="font-bold text-gray-800 text-center mb-1">एडमिन पासवर्ड रिकवरी</h3>
                 <p class="text-xs text-red-500 text-center mb-3">अनाधिकृत एक्सेस रोकने के लिए अपना <b>Secret Recovery PIN</b> डालें।</p>
@@ -280,13 +285,15 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- Razorpay Key -->
                 <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
                     <h4 class="font-bold text-blue-900 mb-1 text-sm"><i class="fas fa-key mr-2"></i>1. Razorpay Key</h4>
                     <div class="flex gap-2 mt-2">
-                        <input type="text" id="rzpKeyInput" placeholder="Enter Razorpay Key" class="flex-1 border p-2 rounded-lg text-xs">
+                        <input type="text" id="rzpKeyInput" placeholder="Enter Razorpay Live Key" class="flex-1 border p-2 rounded-lg text-xs">
                         <button onclick="saveRazorpayKey()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-xs font-bold">Save</button>
                     </div>
                 </div>
+                <!-- Admin Password -->
                 <div class="bg-red-50 border border-red-200 p-4 rounded-xl">
                     <h4 class="font-bold text-red-900 mb-1 text-sm"><i class="fas fa-lock mr-2"></i>2. एडमिन पासवर्ड</h4>
                     <div class="flex gap-2 mt-2">
@@ -294,8 +301,9 @@
                         <button onclick="saveAdminPassword()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold">Update</button>
                     </div>
                 </div>
+                <!-- Admin Secret PIN -->
                 <div class="bg-purple-50 border border-purple-200 p-4 rounded-xl">
-                    <h4 class="font-bold text-purple-900 mb-1 text-sm"><i class="fas fa-user-secret mr-2"></i>3. Recovery PIN बदलें</h4>
+                    <h4 class="font-bold text-purple-900 mb-1 text-sm"><i class="fas fa-user-secret mr-2"></i>3. Recovery PIN</h4>
                     <div class="flex gap-2 mt-2">
                         <input type="text" id="newAdminSecretInput" placeholder="नया PIN लिखें" class="flex-1 border p-2 rounded-lg text-xs">
                         <button onclick="saveAdminSecret()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-xs font-bold">Update</button>
@@ -303,6 +311,7 @@
                 </div>
             </div>
 
+            <!-- Add Service -->
             <div class="bg-gray-50 border p-4 rounded-xl mb-6">
                 <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-plus-circle text-green-600 mr-2"></i>4. नई सर्विस जोड़ें</h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
@@ -317,11 +326,13 @@
                 </button>
             </div>
             
+            <!-- Delete Service -->
             <div class="mb-6">
                 <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-edit text-yellow-600 mr-2"></i>5. मौजूद सर्विस (डिलीट करें)</h4>
                 <div id="adminServiceList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
             </div>
             
+            <!-- Customer List -->
             <div class="border-t pt-4">
                 <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-users text-blue-600 mr-2"></i>6. रजिस्टर्ड ग्राहक (Customers)</h4>
                 <div id="adminCustomerList" class="space-y-2 max-h-48 overflow-y-auto text-xs"></div>
@@ -361,7 +372,6 @@
         }
         
         window.adminPass = localStorage.getItem('tzd_admin_pass') || 'admin123';
-        // यहाँ अपनी Razorpay Live Key लगाएं या एडमिन पैनल से सेव करें 
         window.razorpayKey = localStorage.getItem('tzd_rzp_key') || 'rzp_live_यहां_अपनी_असली_की_डालें';
         window.adminSecretPin = localStorage.getItem('tzd_admin_secret_pin') || 'TZD@2026';
 
@@ -462,7 +472,7 @@
             </div>`).join('');
         };
 
-        // 5. AUTH & DB ACTION FUNCTIONS
+        // 5. AUTH LOGIC
         window.handleCustomerRegister = async function() {
             const name = document.getElementById('regName').value.trim();
             const phone = document.getElementById('regPhone').value.trim();
@@ -528,7 +538,6 @@
 
             try {
                 const userDocs = await db.collection("users").where("phone", "==", phone).where("name", "==", name).get();
-                
                 if (userDocs.empty) {
                     alert("Account Not Found! मोबाइल नंबर या नाम गलत है (Name spelling must match exactly).");
                 } else {
@@ -536,15 +545,12 @@
                     userDocs.forEach(d => docId = d.id);
                     await db.collection("users").doc(docId).update({ pass: newPass });
                     alert("Success! Password Changed Successfully. Please login with your new password.");
-                    
                     document.getElementById('forgotPhone').value = '';
                     document.getElementById('forgotName').value = '';
                     document.getElementById('forgotNewPass').value = '';
                     window.switchAuthTab('login');
                 }
-            } catch(e) {
-                alert("Server error. Please try again.");
-            }
+            } catch(e) { alert("Server error. Please try again."); }
             btn.innerHTML = 'Reset Password'; btn.disabled = false;
         };
 
@@ -570,13 +576,13 @@
             const newPass = document.getElementById('forgotAdminNewPass').value.trim();
 
             if (!id || !phone || !secret || !newPass) return alert("कृपया सभी जानकारी भरें!");
+
             const ADMIN_MASTER_PIN = window.adminSecretPin; 
 
             if (id === 'admin' && phone === '8416862196' && secret === ADMIN_MASTER_PIN) {
                 window.adminPass = newPass;
                 localStorage.setItem('tzd_admin_pass', newPass); 
                 alert("Success! Admin Password Changed Successfully.");
-                
                 document.getElementById('forgotAdminId').value = '';
                 document.getElementById('forgotAdminPhone').value = '';
                 document.getElementById('forgotAdminSecret').value = '';
@@ -587,6 +593,9 @@
             }
         };
 
+        // Admin Panel Save Functions
+        window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_live_यहां_अपनी_असली_की_डालें'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
+        window.saveAdminPassword = () => { window.adminPass = document.getElementById('newAdminPassInput').value; localStorage.setItem('tzd_admin_pass', window.adminPass); alert("Password Updated!"); };
         window.saveAdminSecret = function() {
             const newSecret = document.getElementById('newAdminSecretInput').value.trim();
             if(!newSecret) return alert("कृपया नया Secret Recovery PIN दर्ज करें!");
@@ -613,15 +622,10 @@
                 ns.id = docRef.id;
                 window.services.unshift(ns);
                 
-                window.renderFilters(); 
-                window.renderAdminList(); 
-                window.renderServices();
+                window.renderFilters(); window.renderAdminList(); window.renderServices();
                 
-                document.getElementById('newTitle').value = ''; 
-                document.getElementById('newCat').value = ''; 
-                document.getElementById('newPrice').value = '';
-                document.getElementById('newDocs').value = '';
-                document.getElementById('newDesc').value = '';
+                document.getElementById('newTitle').value = ''; document.getElementById('newCat').value = ''; 
+                document.getElementById('newPrice').value = ''; document.getElementById('newDocs').value = ''; document.getElementById('newDesc').value = '';
                 alert("New Service Added!");
             } catch(e) { alert("Error saving service!"); }
             btn.innerHTML = '<i class="fas fa-plus mr-1"></i> Add Service'; btn.disabled = false;
@@ -631,13 +635,11 @@
             if(confirm("Are you sure you want to delete this service?")) {
                 await db.collection("services").doc(id).delete();
                 window.services = window.services.filter(s => s.id !== id);
-                window.renderFilters(); 
-                window.renderAdminList(); 
-                window.renderServices();
+                window.renderFilters(); window.renderAdminList(); window.renderServices();
             }
         };
 
-        // 6. WHATSAPP & UI UTILITIES
+        // 6. WHATSAPP & RAZORPAY
         window.handleDirectWhatsAppHero = () => {
             if(!window.requireLogin()) return;
             const msg = `नमस्ते TZD Online Services, मेरा नाम *${window.currentUser.name}* (${window.currentUser.phone}) है। मुझे एक ऑनलाइन काम करवाना है।`;
@@ -658,7 +660,6 @@
             window.open(`https://wa.me/918416862196?text=Hello, I am ${window.currentUser.name} (${window.currentUser.phone}). I want to apply for *${s.title}*.`, '_blank');
         };
         
-        // NEW: RAZORPAY PAYMENT & RECEIPT GENERATION LOGIC
         window.payWithRazorpay = (id) => {
             if(!window.requireLogin()) return;
             const s = window.services.find(x => x.id === id);
@@ -672,8 +673,6 @@
                 "prefill": { "name": window.currentUser.name, "contact": window.currentUser.phone },
                 "handler": async function (res) {
                     alert("Payment Successful!");
-                    
-                    // Option 1: Save transaction history to Database (bonus feature)
                     try {
                         await db.collection("transactions").add({
                             customerName: window.currentUser.name,
@@ -683,9 +682,8 @@
                             paymentId: res.razorpay_payment_id,
                             date: new Date().toISOString()
                         });
-                    } catch(e) { console.log("Transaction save failed", e); }
+                    } catch(e) { console.log("Txn save failed", e); }
 
-                    // Option 2: Show Digital Receipt
                     document.getElementById('recName').innerText = window.currentUser.name;
                     document.getElementById('recPhone').innerText = window.currentUser.phone;
                     document.getElementById('recService').innerText = s.title;
@@ -699,43 +697,36 @@
             rzp1.open();
         };
 
-        // NEW: DOWNLOAD PDF RECEIPT (Using Free HTML2PDF)
+        // NEW FIX: DOWNLOAD PDF WITH WHITE BACKGROUND
         window.downloadReceiptPDF = function() {
             const element = document.getElementById('receiptContent');
             const opt = {
                 margin:       10,
                 filename:     'TZD_Payment_Receipt.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 },
                 jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
             };
-            // Generate and save PDF
             html2pdf().set(opt).from(element).save();
         };
 
-        // NEW: SHARE RECEIPT ON WHATSAPP
         window.shareReceiptOnWhatsApp = function() {
             const name = document.getElementById('recName').innerText;
             const service = document.getElementById('recService').innerText;
             const amt = document.getElementById('recAmount').innerText;
             const txnId = document.getElementById('recTxnId').innerText;
-            
-            // Format a nice WhatsApp message
             const text = `*TZD PAYMENT RECEIPT* ✅\n\n*Name:* ${name}\n*Service:* ${service}\n*Amount Paid:* ${amt}\n*Txn ID:* ${txnId}\n\nThank you for using TZD Online Services!`;
-            
-            // Open WhatsApp with pre-filled text (can be sent to anyone)
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
         };
 
+        // Modal Controls
         window.openAuthModal = (t='login') => { document.getElementById('authModal').classList.remove('hidden'); window.switchAuthTab(t); };
         window.closeAuthModal = () => document.getElementById('authModal').classList.add('hidden');
-        
         window.switchAuthTab = (t) => {
             ['login','register','admin','forgot', 'adminForgot'].forEach(x => {
                 const f = document.getElementById('form'+x.charAt(0).toUpperCase()+x.slice(1));
                 if(f) f.classList.add('hidden');
             });
-            
             ['login','register','admin'].forEach(x => {
                 const tb = document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1));
                 if(tb) tb.className = "flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500";
@@ -747,36 +738,26 @@
             if (t !== 'forgot' && t !== 'adminForgot') {
                 document.getElementById('authTabsContainer').classList.remove('hidden');
                 const activeTab = document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
-                if(activeTab) {
-                    activeTab.className = t==='admin' ? "flex-1 py-2.5 text-sm font-bold border-b-2 border-red-600 text-red-600" : "flex-1 py-2.5 text-sm font-bold border-b-2 border-blue-700 text-blue-700";
-                }
+                if(activeTab) activeTab.className = t==='admin' ? "flex-1 py-2.5 text-sm font-bold border-b-2 border-red-600 text-red-600" : "flex-1 py-2.5 text-sm font-bold border-b-2 border-blue-700 text-blue-700";
             } else {
                 document.getElementById('authTabsContainer').classList.add('hidden');
             }
         };
-
         window.logoutUser = () => { if(confirm("Logout?")) { window.currentUser = null; localStorage.removeItem('tzd_current_user'); window.renderHeaderAuth(); } };
         window.filterServices = (c) => { window.currentFilter = c; window.renderFilters(); window.renderServices(); };
         window.toggleAdminModal = () => { document.getElementById('adminModal').classList.toggle('hidden'); document.getElementById('rzpKeyInput').value = window.razorpayKey; };
         window.requireLogin = () => { if(!window.currentUser) { alert("Please login first!"); window.openAuthModal('login'); return false; } return true; };
-        window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_live_यहां_अपनी_असली_की_डालें'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
-        window.saveAdminPassword = () => { window.adminPass = document.getElementById('newAdminPassInput').value; localStorage.setItem('tzd_admin_pass', window.adminPass); alert("Password Updated!"); };
 
-
-        // 7. PLAY/MUTE TOGGLE VOICE MESSAGE LOGIC
+        // 7. VOICE MESSAGE LOGIC
         window.hasSpokenWelcome = false;
         window.isVoicePlaying = false; 
 
         window.triggerSpeech = function() {
             if (!('speechSynthesis' in window)) return;
-            
             window.speechSynthesis.cancel(); 
             window.isVoicePlaying = true;    
-            
             const icon = document.getElementById('audioIcon');
-            if(icon) {
-                icon.className = 'fas fa-volume-up text-2xl text-blue-900 animate-pulse'; 
-            }
+            if(icon) icon.className = 'fas fa-volume-up text-2xl text-blue-900 animate-pulse'; 
 
             const speakText = (text, lang, isLastEntry) => {
                 const speech = new SpeechSynthesisUtterance(text);
@@ -790,19 +771,14 @@
                         if(icon) icon.className = 'fas fa-volume-mute text-2xl text-red-600';
                     };
                 }
-
                 speech.onerror = function(e) {
-                    if (e.error === 'interrupted' || e.error === 'canceled') {
-                        window.isVoicePlaying = false;
-                    }
+                    if (e.error === 'interrupted' || e.error === 'canceled') window.isVoicePlaying = false;
                 };
-
                 window.speechSynthesis.speak(speech);
             };
 
             const engText = "Welcome to T Z D Online Services, how may I assist you?";
             const hinText = "टी जेड डी जन सेवा केंद्र में आपका स्वागत है। मैं आपकी किस प्रकार सहायता कर सकता हूं?";
-
             speakText(engText, "en-IN", false);
             speakText(hinText, "hi-IN", false);
             speakText(engText, "en-IN", false);
@@ -811,9 +787,7 @@
 
         window.toggleAudio = function(event) {
             if (event) event.stopPropagation();
-            
             window.hasSpokenWelcome = true; 
-            
             const icon = document.getElementById('audioIcon');
             
             if (window.isVoicePlaying) {
