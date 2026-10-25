@@ -218,7 +218,6 @@
                 <button id="tabAdmin" onclick="switchAuthTab('admin')" class="flex-1 py-2.5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-red-600">एडमिन</button>
             </div>
             
-            <!-- Login Form -->
             <div id="formLogin" class="space-y-4">
                 <input type="tel" id="loginPhone" placeholder="10 अंकों का मोबाइल नंबर" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <input type="password" id="loginPass" placeholder="अपना पासवर्ड डालें" class="w-full border p-2.5 rounded-lg text-sm outline-none">
@@ -228,7 +227,6 @@
                 </div>
             </div>
 
-            <!-- Forgot Password (Customer) -->
             <div id="formForgot" class="space-y-3 hidden">
                 <h3 class="font-bold text-gray-800 text-center mb-1">पासवर्ड रीसेट करें (ग्राहक)</h3>
                 <p class="text-xs text-red-500 text-center mb-3">सिक्योरिटी के लिए अपना रजिस्टर किया हुआ नाम और मोबाइल नंबर डालें।</p>
@@ -241,7 +239,6 @@
                 </div>
             </div>
 
-            <!-- Register Form -->
             <div id="formRegister" class="space-y-3 hidden">
                 <input type="text" id="regName" placeholder="पूरा नाम (Full Name) *" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="tel" id="regPhone" placeholder="10 अंकों का मोबाइल नंबर *" class="w-full border p-2.5 rounded-lg text-sm">
@@ -250,7 +247,6 @@
                 <button id="registerBtn" onclick="handleCustomerRegister()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow">Register</button>
             </div>
 
-            <!-- Admin Login Form -->
             <div id="formAdmin" class="space-y-4 hidden">
                 <input type="text" id="adminIdInput" placeholder="Admin ID या Mobile" class="w-full border p-2.5 rounded-lg text-sm">
                 <input type="password" id="adminPassInput" placeholder="Admin Password" class="w-full border p-2.5 rounded-lg text-sm">
@@ -260,7 +256,6 @@
                 </div>
             </div>
 
-            <!-- Admin Forgot Password -->
             <div id="formAdminForgot" class="space-y-3 hidden">
                 <h3 class="font-bold text-gray-800 text-center mb-1">एडमिन पासवर्ड रिकवरी</h3>
                 <p class="text-xs text-red-500 text-center mb-3">अनाधिकृत एक्सेस रोकने के लिए अपना <b>Secret Recovery PIN</b> डालें।</p>
@@ -697,17 +692,37 @@
             rzp1.open();
         };
 
-        // NEW FIX: DOWNLOAD PDF WITH WHITE BACKGROUND
+        // NEW 100% WORKING FIX: DOWNLOAD PDF WITH WHITE BACKGROUND
         window.downloadReceiptPDF = function() {
-            const element = document.getElementById('receiptContent');
+            const originalElement = document.getElementById('receiptContent');
+            
+            // Modal के इशू को फिक्स करने के लिए रसीद की एक कॉपी (Clone) बनाएँ
+            const clone = originalElement.cloneNode(true);
+            const tempDiv = document.createElement('div');
+            
+            // इसे स्क्रीन के पीछे छिपा दें ताकि वेबसाइट का डिज़ाइन ख़राब न हो
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.top = '-9999px'; 
+            tempDiv.style.left = '0';
+            tempDiv.style.width = '600px'; 
+            tempDiv.style.background = '#ffffff';
+            tempDiv.style.padding = '20px';
+            tempDiv.appendChild(clone);
+            
+            document.body.appendChild(tempDiv);
+
             const opt = {
                 margin:       10,
                 filename:     'TZD_Payment_Receipt.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(element).save();
+            
+            // PDF जनरेट करें और फिर उस छिपी हुई कॉपी को डिलीट कर दें
+            html2pdf().set(opt).from(tempDiv).save().then(() => {
+                document.body.removeChild(tempDiv);
+            });
         };
 
         window.shareReceiptOnWhatsApp = function() {
