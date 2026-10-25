@@ -326,7 +326,7 @@
         }
         
         window.adminPass = localStorage.getItem('tzd_admin_pass') || 'admin123';
-        window.razorpayKey = localStorage.getItem('tzd_rzp_key') || 'rzp_test_Tr1WFrtTudQuZn';
+        window.razorpayKey = localStorage.getItem('tzd_rzp_key') || 'rzp_live_TrZHiBbiE8dAqN';
         
         // NEW: Load Secret PIN from Local Storage (Default is TZD@2026)
         window.adminSecretPin = localStorage.getItem('tzd_admin_secret_pin') || 'TZD@2026';
@@ -675,7 +675,7 @@
         window.filterServices = (c) => { window.currentFilter = c; window.renderFilters(); window.renderServices(); };
         window.toggleAdminModal = () => { document.getElementById('adminModal').classList.toggle('hidden'); document.getElementById('rzpKeyInput').value = window.razorpayKey; };
         window.requireLogin = () => { if(!window.currentUser) { alert("Please login first!"); window.openAuthModal('login'); return false; } return true; };
-        window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_test_Tr1WFrtTudQuZn'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
+        window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_live_TrZHiBbiE8dAqN'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
         window.saveAdminPassword = () => { window.adminPass = document.getElementById('newAdminPassInput').value; localStorage.setItem('tzd_admin_pass', window.adminPass); alert("Password Updated!"); };
 
 
