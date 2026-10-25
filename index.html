@@ -8,7 +8,7 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase Compat Libraries (ये बिना लोकल सर्वर के भी काम करेंगे) -->
+    <!-- Firebase Compat Libraries -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
@@ -113,10 +113,7 @@
             <h3 class="text-2xl md:text-3xl font-bold text-gray-900">हमारी ऑनलाइन सेवाएं और शुल्क (Price List)</h3>
             <p class="text-gray-600 text-sm mt-1">पसंदीदा सर्विस चुनें (सेवा लेने के लिए लॉगिन होना अनिवार्य है)</p>
         </div>
-
-        <!-- Dynamic Category Filters -->
         <div id="categoryFilters" class="flex flex-wrap justify-center gap-2 mb-8"></div>
-
         <div id="servicesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
             <div class="col-span-full text-center text-gray-500 font-bold"><i class="fas fa-spinner fa-spin mr-2"></i> Loading services... Please wait.</div>
         </div>
@@ -236,7 +233,12 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT (Standard Script Instead of Module to fix Loading Error) -->
+    <!-- Floating Welcome Audio Button -->
+    <button onclick="window.forcePlayAudio()" class="fixed bottom-10 right-4 bg-yellow-400 hover:bg-yellow-500 text-blue-900 w-14 h-14 rounded-full shadow-2xl z-50 flex items-center justify-center animate-bounce">
+        <i class="fas fa-volume-up text-2xl"></i>
+    </button>
+
+    <!-- JAVASCRIPT -->
     <script>
         // 1. FIREBASE CONFIGURATION
         const firebaseConfig = {
@@ -255,7 +257,6 @@
         window.registeredUsers = [];
         window.currentFilter = 'All';
         
-        // Safety check for localStorage parsing errors
         try {
             window.currentUser = JSON.parse(localStorage.getItem('tzd_current_user')) || null;
         } catch(e) {
@@ -305,7 +306,7 @@
             grid.innerHTML = '';
             const filtered = window.currentFilter === 'All' ? window.services : window.services.filter(s => s.category === window.currentFilter);
             if(filtered.length === 0) {
-                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center">अभी तक कोई सर्विस एड नहीं की गई है। एडमिन पैनल से सर्विस जोड़ें।</p>';
+                grid.innerHTML = '<p class="text-gray-500 col-span-full text-center">अभी तक कोई सर्विस एड नहीं की गई है। एडमिन पैनल से सर्विस जोड़ें।</p>';
                 return;
             }
             filtered.forEach(s => {
@@ -524,6 +525,56 @@
         window.requireLogin = () => { if(!window.currentUser) { alert("Please login first!"); window.openAuthModal('login'); return false; } return true; };
         window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_test_Tr1WFrtTudQuZn'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
         window.saveAdminPassword = () => { window.adminPass = document.getElementById('newAdminPassInput').value; localStorage.setItem('tzd_admin_pass', window.adminPass); alert("Password Updated!"); };
+
+        // 7. ROBUST WELCOME VOICE MESSAGE (Text-to-Speech)
+        window.hasSpokenWelcome = false;
+
+        window.triggerSpeech = function() {
+            if (!('speechSynthesis' in window)) return;
+
+            // सिस्टम की फंसी हुई आवाज़ क्लियर करें
+            window.speechSynthesis.cancel();
+
+            const speakText = (text, lang) => {
+                const speech = new SpeechSynthesisUtterance(text);
+                speech.lang = lang;
+                speech.rate = 0.9;
+                speech.volume = 1.0;
+                window.speechSynthesis.speak(speech);
+            };
+
+            const engText = "Welcome to T Z D Online Services, how may I assist you?";
+            const hinText = "टी जेड डी जन सेवा केंद्र में आपका स्वागत है। मैं आपकी किस प्रकार सहायता कर सकता हूं?";
+
+            // लगातार 2 बार (English + Hindi, English + Hindi)
+            speakText(engText, "en-IN");
+            speakText(hinText, "hi-IN");
+            speakText(engText, "en-IN");
+            speakText(hinText, "hi-IN");
+        };
+
+        window.autoPlayWelcomeAudio = function() {
+            if (!window.hasSpokenWelcome) {
+                window.hasSpokenWelcome = true; 
+                window.triggerSpeech();
+                
+                // एक बार प्ले हो जाने पर इवेंट लिसनर्स को हटा दें ताकि बार-बार क्लिक करने पर न बोले
+                document.removeEventListener('click', window.autoPlayWelcomeAudio);
+                document.removeEventListener('touchstart', window.autoPlayWelcomeAudio);
+                document.removeEventListener('keydown', window.autoPlayWelcomeAudio);
+            }
+        };
+
+        // फ्लोटिंग बटन के लिए फोर्स प्ले फ़ंक्शन (जब यूजर खुद सुनना चाहे)
+        window.forcePlayAudio = function() {
+            window.hasSpokenWelcome = true; // ऑटोप्ले को ब्लॉक करने के लिए
+            window.triggerSpeech();
+        };
+
+        // जैसे ही यूज़र स्क्रीन पर पहली बार कहीं भी टच, क्लिक या टाइप करेगा, आवाज़ प्ले हो जाएगी
+        document.addEventListener('click', window.autoPlayWelcomeAudio);
+        document.addEventListener('touchstart', window.autoPlayWelcomeAudio);
+        document.addEventListener('keydown', window.autoPlayWelcomeAudio);
 
         // INITIALIZE APP
         window.renderHeaderAuth();
