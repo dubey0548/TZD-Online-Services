@@ -44,10 +44,11 @@
         }
         
         .receipt-container {
-            background: #fff;
-            padding: 20px;
+            background: #ffffff;
+            color: #1f2937;
+            padding: 24px;
             border: 2px dashed #3b82f6;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 15px;
             font-family: 'Courier New', Courier, monospace;
         }
@@ -180,13 +181,13 @@
                     <p class="text-xs text-gray-600">Payment Receipt</p>
                 </div>
                 
-                <div class="text-sm space-y-2 mb-4">
+                <div class="text-sm space-y-2 mb-4 text-gray-800">
                     <p><strong>Status:</strong> <span class="text-green-600 font-bold">SUCCESSFUL ✓</span></p>
                     <p><strong>Customer Name:</strong> <span id="recName"></span></p>
                     <p><strong>Mobile No:</strong> <span id="recPhone"></span></p>
                     <p><strong>Service:</strong> <span id="recService"></span></p>
-                    <p><strong>Amount Paid:</strong> <span id="recAmount" class="font-bold text-lg"></span></p>
-                    <p><strong>Transaction ID:</strong> <br><span id="recTxnId" class="text-xs text-gray-600 break-all"></span></p>
+                    <p><strong>Amount Paid:</strong> <span id="recAmount" class="font-bold text-lg text-blue-900"></span></p>
+                    <p><strong>Transaction ID:</strong> <br><span id="recTxnId" class="text-xs text-gray-600 break-all font-mono"></span></p>
                     <p><strong>Date & Time:</strong> <span id="recDate" class="text-xs text-gray-600"></span></p>
                 </div>
                 
@@ -206,7 +207,7 @@
         </div>
     </div>
 
-    <!-- NEW: CUSTOMER DASHBOARD MODAL -->
+    <!-- CUSTOMER DASHBOARD MODAL -->
     <div id="customerDashboardModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
             <button onclick="closeCustomerDashboard()" class="absolute top-4 right-4 text-gray-400 hover:text-red-600 text-2xl font-bold">&times;</button>
@@ -219,9 +220,7 @@
             </div>
             
             <h4 class="font-bold text-gray-800 mb-3"><i class="fas fa-history text-green-600 mr-2"></i>मेरा पेमेंट रिकॉर्ड (Payment History)</h4>
-            <div id="customerTransactionList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                <!-- Transactions will load here -->
-            </div>
+            <div id="customerTransactionList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
         </div>
     </div>
 
@@ -357,12 +356,10 @@
                 </div>
             </div>
 
-            <!-- NEW: ADMIN TRANSACTION HISTORY -->
+            <!-- ADMIN TRANSACTION HISTORY -->
             <div class="border-t mt-6 pt-6">
                 <h4 class="font-bold text-gray-800 text-lg mb-4"><i class="fas fa-file-invoice-dollar text-green-600 mr-2"></i>7. पेमेंट हिस्ट्री (Transactions Tracker)</h4>
-                <div id="adminTransactionList" class="space-y-3 max-h-80 overflow-y-auto pr-2">
-                    <!-- Transactions will load here -->
-                </div>
+                <div id="adminTransactionList" class="space-y-3 max-h-80 overflow-y-auto pr-2"></div>
             </div>
         </div>
     </div>
@@ -389,7 +386,7 @@
         // 2. SAFE GLOBAL VARIABLES
         window.services = [];
         window.registeredUsers = [];
-        window.transactions = []; // NEW: Array for transactions
+        window.transactions = [];
         window.currentFilter = 'All';
         
         try {
@@ -403,7 +400,7 @@
         window.razorpayKey = localStorage.getItem('tzd_rzp_key') || 'rzp_live_यहां_अपनी_असली_की_डालें';
         window.adminSecretPin = localStorage.getItem('tzd_admin_secret_pin') || 'TZD@2026';
 
-        // 3. LOAD DATA FROM FIREBASE (Updated to fetch Transactions)
+        // 3. LOAD DATA FROM FIREBASE
         window.loadData = async function() {
             try {
                 const s_query = await db.collection("services").get();
@@ -414,18 +411,16 @@
                 window.registeredUsers = [];
                 u_query.forEach(d => window.registeredUsers.push({ id: d.id, ...d.data() }));
 
-                // Fetch Transactions
                 const t_query = await db.collection("transactions").get();
                 window.transactions = [];
                 t_query.forEach(d => window.transactions.push({ id: d.id, ...d.data() }));
-                // Sort by Date Descending (Newest first)
                 window.transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 window.renderFilters();
                 window.renderServices();
                 window.renderAdminList();
                 window.renderCustomerList();
-                window.renderAdminTransactions(); // Render Admin History
+                window.renderAdminTransactions();
             } catch (error) {
                 console.error("Data Load Error:", error);
                 document.getElementById('servicesGrid').innerHTML = '<p class="text-red-500 col-span-full text-center p-4 border border-red-300 rounded bg-red-50">डेटाबेस से कनेक्ट नहीं हो पा रहा है।</p>';
@@ -486,7 +481,6 @@
                 <button onclick="logoutUser()" class="bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-xs font-bold">Logout</button>`;
             } else {
                 guestBanner.classList.add('hidden');
-                // NEW: Customer Profile Button
                 authArea.innerHTML = `
                 <button onclick="openCustomerDashboard()" class="bg-green-50 hover:bg-green-100 border border-green-200 text-green-900 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition">
                     <i class="fas fa-user-circle mr-1"></i> ${window.currentUser.name}
@@ -512,7 +506,6 @@
             </div>`).join('');
         };
 
-        // NEW: Render Admin Transactions List
         window.renderAdminTransactions = function() {
             const list = document.getElementById('adminTransactionList');
             if(!list) return;
@@ -535,12 +528,10 @@
             `).join('');
         };
 
-        // NEW: Render Customer's Own Transactions List
         window.renderCustomerTransactions = function() {
             const list = document.getElementById('customerTransactionList');
             if(!list || !window.currentUser || window.currentUser.role === 'admin') return;
             
-            // Set User Details
             document.getElementById('custProfileName').innerText = window.currentUser.name;
             document.getElementById('custProfilePhone').innerText = window.currentUser.phone;
 
@@ -665,6 +656,7 @@
             const newPass = document.getElementById('forgotAdminNewPass').value.trim();
 
             if (!id || !phone || !secret || !newPass) return alert("कृपया सभी जानकारी भरें!");
+
             const ADMIN_MASTER_PIN = window.adminSecretPin; 
 
             if (id === 'admin' && phone === '8416862196' && secret === ADMIN_MASTER_PIN) {
@@ -772,21 +764,18 @@
                     try {
                         const docRef = await db.collection("transactions").add(newTxn);
                         newTxn.id = docRef.id;
-                        window.transactions.unshift(newTxn); // Add to local array
-                        window.renderAdminTransactions();    // Update Admin UI
-                        window.renderCustomerTransactions(); // Update Customer UI
+                        window.transactions.unshift(newTxn);
+                        window.renderAdminTransactions();
+                        window.renderCustomerTransactions();
                     } catch(e) { console.log("Txn save failed", e); }
 
-                    // Show receipt instantly
-                    window.viewPastReceipt(newTxn.id || res.razorpay_payment_id);
+                    window.viewPastReceipt(newTxn.id);
                 }
             });
             rzp1.open();
         };
 
-        // NEW: View Past Receipt Function
         window.viewPastReceipt = function(txnId) {
-            // Find transaction from array (either by DB id or Razorpay ID)
             const t = window.transactions.find(x => x.id === txnId || x.paymentId === txnId);
             if(!t) return alert("Receipt details not found locally. Please refresh.");
             
@@ -798,35 +787,22 @@
             document.getElementById('recDate').innerText = new Date(t.date).toLocaleString('en-IN');
             
             document.getElementById('receiptModal').classList.remove('hidden');
-            
-            // If viewing from customer dashboard, close dashboard so receipt is visible clearly
             document.getElementById('customerDashboardModal').classList.add('hidden');
+            if(document.getElementById('adminModal')) {
+                document.getElementById('adminModal').classList.add('hidden');
+            }
         };
 
-        // NEW: Admin Direct Share WA
         window.shareAdminReceiptWA = function(txnId) {
             const t = window.transactions.find(x => x.id === txnId);
             if(!t) return;
             const text = `*TZD PAYMENT RECEIPT* ✅\n\n*Name:* ${t.customerName}\n*Service:* ${t.serviceName}\n*Amount Paid:* ₹${t.amount}\n*Txn ID:* ${t.paymentId}\n*Date:* ${new Date(t.date).toLocaleString('en-IN')}\n\nThank you for using TZD Online Services!`;
-            // Send directly to that customer's number
             window.open(`https://wa.me/91${t.phone}?text=${encodeURIComponent(text)}`, '_blank');
         };
 
-        // DOWNLOAD PDF WITH WHITE BACKGROUND
+        // PDF DOWNLOAD WITH STABLE BACKGROUND
         window.downloadReceiptPDF = function() {
-            const originalElement = document.getElementById('receiptContent');
-            const clone = originalElement.cloneNode(true);
-            const tempDiv = document.createElement('div');
-            
-            tempDiv.style.position = 'absolute';
-            tempDiv.style.top = '-9999px'; 
-            tempDiv.style.left = '0';
-            tempDiv.style.width = '600px'; 
-            tempDiv.style.background = '#ffffff';
-            tempDiv.style.padding = '20px';
-            tempDiv.appendChild(clone);
-            document.body.appendChild(tempDiv);
-
+            const element = document.getElementById('receiptContent');
             const opt = {
                 margin:       10,
                 filename:     'TZD_Payment_Receipt.pdf',
@@ -834,10 +810,7 @@
                 html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
                 jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
             };
-            
-            html2pdf().set(opt).from(tempDiv).save().then(() => {
-                document.body.removeChild(tempDiv);
-            });
+            html2pdf().set(opt).from(element).save();
         };
 
         window.shareReceiptOnWhatsApp = function() {
