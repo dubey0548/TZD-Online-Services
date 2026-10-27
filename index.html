@@ -737,7 +737,7 @@
             }
         };
 
-        // 6. WHATSAPP & RAZORPAY (UPDATED WITH ERROR HANDLER)
+        // 6. WHATSAPP & RAZORPAY (UPDATED WITH DUMMY EMAIL & ERROR HANDLER)
         window.handleDirectWhatsAppHero = () => {
             if(!window.requireLogin()) return;
             const msg = `नमस्ते TZD Online Services, मेरा नाम *${window.currentUser.name}* (${window.currentUser.phone}) है। मुझे एक ऑनलाइन काम करवाना है।`;
@@ -784,7 +784,9 @@
                 "description": s.title,
                 "prefill": { 
                     "name": window.currentUser.name || "Customer", 
-                    "contact": window.currentUser.phone 
+                    "contact": window.currentUser.phone,
+                    // नया कोड: डमी ईमेल ताकि UPI ऑप्शन हमेशा दिखे
+                    "email": window.currentUser.phone + "@tzdjansewa.com"
                 },
                 "handler": async function (res) {
                     alert("✅ Payment Successful!");
