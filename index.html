@@ -237,7 +237,7 @@
             
             <!-- Login Form -->
             <div id="formLogin" class="space-y-4">
-                <input type="tel" id="loginPhone" placeholder="10 अंकों का मोबाइल नंबर" class="w-full border p-2.5 rounded-lg text-sm outline-none">
+                <input type="tel" id="loginPhone" placeholder="10 अंकों का মোবাইল नंबर" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <input type="password" id="loginPass" placeholder="अपना पासवर्ड डालें" class="w-full border p-2.5 rounded-lg text-sm outline-none">
                 <button id="loginBtn" onclick="handleCustomerLogin()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow">Login</button>
                 <div class="text-right mt-1">
@@ -397,13 +397,12 @@
         }
         
         window.adminPass = localStorage.getItem('tzd_admin_pass') || 'admin123';
-        window.razorpayKey = 'rzp_live_यहां_अपनी_असली_की_डालें'; // अब इसे डिफ़ॉल्ट रखा गया है, यह Firebase से लोड होगा
+        window.razorpayKey = 'rzp_live_यहां_अपनी_असली_की_डालें'; // यह Firebase से लोड होगा
         window.adminSecretPin = localStorage.getItem('tzd_admin_secret_pin') || 'TZD@2026';
 
         // 3. LOAD DATA FROM FIREBASE
         window.loadData = async function() {
             try {
-                // Firebase से Razorpay Key लोड करें
                 const configDoc = await db.collection("settings").doc("razorpay").get();
                 if(configDoc.exists && configDoc.data().key) {
                     window.razorpayKey = configDoc.data().key;
@@ -679,7 +678,6 @@
             }
         };
 
-        // NEW RAZORPAY KEY SAVE LOGIC (Saves to Firebase Database)
         window.saveRazorpayKey = async () => { 
             const newKey = document.getElementById('rzpKeyInput').value.trim();
             if(!newKey) return alert("Please enter a valid Razorpay Key!");
@@ -737,7 +735,7 @@
             }
         };
 
-        // 6. WHATSAPP & RAZORPAY (UPDATED WITH DUMMY EMAIL & ERROR HANDLER)
+        // 6. WHATSAPP & RAZORPAY (UPI FORCED FIX)
         window.handleDirectWhatsAppHero = () => {
             if(!window.requireLogin()) return;
             const msg = `नमस्ते TZD Online Services, मेरा नाम *${window.currentUser.name}* (${window.currentUser.phone}) है। मुझे एक ऑनलाइन काम करवाना है।`;
@@ -762,18 +760,22 @@
             if(!window.requireLogin()) return;
             const s = window.services.find(x => x.id === id);
             
-            // 1. Key की चेकिंग (स्पेस हटाना और डमी Key को रोकना)
             const cleanKey = window.razorpayKey ? window.razorpayKey.trim() : '';
             if (!cleanKey || cleanKey.includes('यहां_अपनी') || cleanKey.length < 10) {
                 alert("⚠️ एरर: असली Razorpay Key सेट नहीं है। कृपया एडमिन पैनल में जाकर सही Live/Test Key सेव करें।");
                 return;
             }
 
-            // 2. अमाउंट की चेकिंग (कम से कम ₹1 होना चाहिए)
             const amtPaise = Math.round(Number(s.price) * 100);
             if (amtPaise < 100) {
                 alert("⚠️ एरर: सर्विस का प्राइस कम से कम ₹1 होना चाहिए।");
                 return;
+            }
+
+            // फिक्स 1: मोबाइल नंबर के आगे +91 जोड़ना (Razorpay को भारतीय नंबर बताने के लिए)
+            let custPhone = window.currentUser.phone || "";
+            if (custPhone.length === 10 && !custPhone.startsWith("+91")) {
+                custPhone = "+91" + custPhone;
             }
             
             const rzp1 = new Razorpay({
@@ -784,9 +786,26 @@
                 "description": s.title,
                 "prefill": { 
                     "name": window.currentUser.name || "Customer", 
-                    "contact": window.currentUser.phone,
-                    // नया कोड: डमी ईमेल ताकि UPI ऑप्शन हमेशा दिखे
-                    "email": window.currentUser.phone + "@tzdjansewa.com"
+                    "contact": custPhone,
+                    // फिक्स 2: क्लीन ईमेल
+                    "email": "payment@tzdjansewa.com"
+                },
+                // फिक्स 3: UPI को ज़बरदस्ती सबसे ऊपर दिखाना
+                "config": {
+                    "display": {
+                        "blocks": {
+                            "upi_block": {
+                                "name": "Pay via UPI",
+                                "instruments": [ { "method": "upi" } ]
+                            },
+                            "other_block": {
+                                "name": "Other Payment Modes",
+                                "instruments": [ { "method": "card" }, { "method": "netbanking" }, { "method": "wallet" } ]
+                            }
+                        },
+                        "sequence": ["block.upi_block", "block.other_block"],
+                        "preferences": { "show_default_blocks": false }
+                    }
                 },
                 "handler": async function (res) {
                     alert("✅ Payment Successful!");
@@ -812,7 +831,6 @@
                 }
             });
 
-            // 3. असली एरर पकड़ने वाला नया कोड (Error Handler)
             rzp1.on('payment.failed', function (response){
                 alert("❌ Payment Failed!\nकारण (Reason): " + response.error.description);
                 console.error("Razorpay Error:", response.error);
@@ -846,7 +864,7 @@
             window.open(`https://wa.me/91${t.phone}?text=${encodeURIComponent(text)}`, '_blank');
         };
 
-        // PDF DOWNLOAD WITH STABLE BACKGROUND
+        // PDF DOWNLOAD
         window.downloadReceiptPDF = function() {
             const element = document.getElementById('receiptContent');
             const opt = {
