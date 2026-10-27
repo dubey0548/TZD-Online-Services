@@ -397,12 +397,18 @@
         }
         
         window.adminPass = localStorage.getItem('tzd_admin_pass') || 'admin123';
-        window.razorpayKey = localStorage.getItem('tzd_rzp_key') || 'rzp_live_यहां_अपनी_असली_की_डालें';
+        window.razorpayKey = 'rzp_live_यहां_अपनी_असली_की_डालें'; // अब इसे डिफ़ॉल्ट रखा गया है, यह Firebase से लोड होगा
         window.adminSecretPin = localStorage.getItem('tzd_admin_secret_pin') || 'TZD@2026';
 
         // 3. LOAD DATA FROM FIREBASE
         window.loadData = async function() {
             try {
+                // Firebase से Razorpay Key लोड करें
+                const configDoc = await db.collection("settings").doc("razorpay").get();
+                if(configDoc.exists && configDoc.data().key) {
+                    window.razorpayKey = configDoc.data().key;
+                }
+
                 const s_query = await db.collection("services").get();
                 window.services = [];
                 s_query.forEach(d => window.services.push({ id: d.id, ...d.data() }));
@@ -673,7 +679,21 @@
             }
         };
 
-        window.saveRazorpayKey = () => { window.razorpayKey = document.getElementById('rzpKeyInput').value || 'rzp_live_यहां_अपनी_असली_की_डालें'; localStorage.setItem('tzd_rzp_key', window.razorpayKey); alert("Key Saved!"); };
+        // NEW RAZORPAY KEY SAVE LOGIC (Saves to Firebase Database)
+        window.saveRazorpayKey = async () => { 
+            const newKey = document.getElementById('rzpKeyInput').value.trim();
+            if(!newKey) return alert("Please enter a valid Razorpay Key!");
+            
+            try {
+                await db.collection("settings").doc("razorpay").set({ key: newKey });
+                window.razorpayKey = newKey;
+                alert("Razorpay Key सफलतापूर्वक डेटाबेस में सेव हो गई! अब सभी ग्राहकों का पेमेंट काम करेगा।");
+            } catch(e) {
+                alert("Key सेव करने में एरर आया!");
+                console.error(e);
+            }
+        };
+
         window.saveAdminPassword = () => { window.adminPass = document.getElementById('newAdminPassInput').value; localStorage.setItem('tzd_admin_pass', window.adminPass); alert("Password Updated!"); };
         window.saveAdminSecret = function() {
             const newSecret = document.getElementById('newAdminSecretInput').value.trim();
